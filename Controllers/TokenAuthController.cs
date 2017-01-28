@@ -11,7 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 using TheOne.Models; 
 using Microsoft.AspNetCore.Authorization; 
  
-namespace OneThing.Controllers 
+namespace TheOne.Controllers 
 { 
     [Route("api/[controller]")] 
     public class TokenAuthController : Controller 
