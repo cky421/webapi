@@ -12,6 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using TheOne.Common.Auth;
 using TheOne.Models;
+using TheOne.Repositories;
 
 namespace TheOne
 {
@@ -39,6 +40,7 @@ namespace TheOne
             }); 
             services.AddMvc();
             services.AddSwaggerGen();
+            services.AddSingleton<IUserRepository, UserRepository>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
