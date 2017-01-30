@@ -15,7 +15,11 @@
     "Microsoft.Extensions.Logging": "1.1.0",
     "Microsoft.Extensions.Logging.Console": "1.1.0",
     "Microsoft.Extensions.Logging.Debug": "1.1.0",
-    "Microsoft.Extensions.Options.ConfigurationExtensions": "1.1.0"
+    "Microsoft.Extensions.Options.ConfigurationExtensions": "1.1.0",
+    "System.IdentityModel.Tokens.Jwt": "5.1.2",
+    "Microsoft.AspNetCore.Authentication": "1.1.0",
+    "Microsoft.AspNetCore.Authentication.JwtBearer": "1.1.0",
+    "Microsoft.AspNetCore.Diagnostics": "1.1.0"
   },
 
   "tools": {
@@ -56,6 +60,6 @@
   },
 
   "tooling": {
-    "defaultNamespace": "theone"
+    "defaultNamespace": "TheOne"
   }
 }
