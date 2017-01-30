@@ -1,0 +1,17 @@
+ {
+   "name": "theone",
+   "author": {
+     "email": "youngytj@sina.com",
+     "name": "youngytj",
+     "url": "https://youngytj.github.io"
+   },
+   "description": "Self use for home control",
+   "license": "MIT",
+   "version": "0.0.0",
+   "scripts": {
+        "start": "concurrently \"mongod --dbpath Database\" \"dotnet watch run\""
+   },
+   "devDependencies": {
+     "concurrently": "^3.1.0"
+   }
+ }
