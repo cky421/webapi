@@ -46,6 +46,7 @@ namespace TheOne
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+            loggerFactory.AddFile("Logs/theone-{Date}.log");
             loggerFactory.AddDebug();
 
             app.UseExceptionHandler(appBuilder => 
