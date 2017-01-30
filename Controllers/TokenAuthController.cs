@@ -9,17 +9,19 @@ using Microsoft.IdentityModel.Tokens;
 using TheOne.Models;
 using TheOne.Repositories;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Logging;
 
 namespace TheOne.Controllers
 {
     [Route("api/[controller]")]
     public class TokenAuthController : Controller
     {
-        public IUserRepository users { get; set; }
-
-        public TokenAuthController(IUserRepository users)
+        private readonly IUserRepository users;
+        private readonly ILogger logger;
+        public TokenAuthController(IUserRepository users, ILogger<TokenAuthController> logger)
         {
             this.users = users;
+            this.logger = logger;
         }
 
         [HttpPost]
