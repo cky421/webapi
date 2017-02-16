@@ -1,7 +1,7 @@
 using System;
-using TheOne.Models;
+using WebApi.Models;
 
-namespace TheOne.Repositories
+namespace WebApi.Repositories
 {
     public interface IUserRepository
     {

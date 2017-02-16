@@ -10,11 +10,11 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
-using TheOne.Common.Auth;
-using TheOne.Models;
-using TheOne.Repositories;
+using WebApi.Common.Auth;
+using WebApi.Models;
+using WebApi.Repositories;
 
-namespace TheOne
+namespace WebApi
 {
     public class Startup
     {
@@ -46,7 +46,7 @@ namespace TheOne
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-            loggerFactory.AddFile("Logs/theone-{Date}.log");
+            loggerFactory.AddFile("Logs/webapi-{Date}.log");
             loggerFactory.AddDebug();
 
             app.UseExceptionHandler(appBuilder => 

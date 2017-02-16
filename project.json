@@ -69,6 +69,6 @@
   },
 
   "tooling": {
-    "defaultNamespace": "TheOne"
+    "defaultNamespace": "WebApi"
   }
 }

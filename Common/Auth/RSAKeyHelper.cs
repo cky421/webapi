@@ -1,6 +1,6 @@
 using System.Security.Cryptography;
 
-namespace TheOne.Common.Auth
+namespace WebApi.Common.Auth
 {
     public class RSAKeyHelper
     {

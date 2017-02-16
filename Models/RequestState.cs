@@ -1,4 +1,4 @@
-namespace TheOne.Models
+namespace WebApi.Models
 {
     public enum RequestState
     {
