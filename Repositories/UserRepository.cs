@@ -1,9 +1,9 @@
 using System;
-using TheOne.Models;
+using WebApi.Models;
 using MongoDB.Driver;
 using MongoDB.Bson;
 
-namespace TheOne.Repositories
+namespace WebApi.Repositories
 {
     public class UserRepository: IUserRepository
     {

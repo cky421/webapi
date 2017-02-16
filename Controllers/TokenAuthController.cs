@@ -1,17 +1,17 @@
 using System;
 using Microsoft.AspNetCore.Mvc;
-using TheOne.Common.Auth;
+using WebApi.Common.Auth;
 using System.IdentityModel.Tokens.Jwt;
 using Newtonsoft.Json;
 using System.Security.Claims;
 using System.Security.Principal;
 using Microsoft.IdentityModel.Tokens;
-using TheOne.Models;
-using TheOne.Repositories;
+using WebApi.Models;
+using WebApi.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 
-namespace TheOne.Controllers
+namespace WebApi.Controllers
 {
     [Route("api/[controller]")]
     public class TokenAuthController : Controller

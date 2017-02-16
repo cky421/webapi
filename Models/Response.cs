@@ -1,6 +1,6 @@
 using System;
 
-namespace TheOne.Models
+namespace WebApi.Models
 {
     public class Response
     {

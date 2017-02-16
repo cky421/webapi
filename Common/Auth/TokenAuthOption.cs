@@ -1,7 +1,7 @@
 using System;
 using Microsoft.IdentityModel.Tokens;
 
-namespace TheOne.Common.Auth
+namespace WebApi.Common.Auth
 {
     public class TokenAuthOption 
     { 
