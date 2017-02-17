@@ -32,12 +32,13 @@ namespace WebApi
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddAuthorization(auth => 
-            { 
-                auth.AddPolicy("Bearer", new AuthorizationPolicyBuilder() 
+            services.AddAuthorization(auth =>
+            {
+                auth.AddPolicy("Bearer", new AuthorizationPolicyBuilder()
                     .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme‌​)
-                    .RequireAuthenticatedUser().Build()); 
-            }); 
+                    .RequireAuthenticatedUser().Build());
+            });
+            services.AddCors();
             services.AddMvc();
             services.AddSwaggerGen();
             services.AddSingleton<IUserRepository, UserRepository>();
@@ -49,55 +50,59 @@ namespace WebApi
             loggerFactory.AddFile("Logs/webapi-{Date}.log");
             loggerFactory.AddDebug();
 
-            app.UseExceptionHandler(appBuilder => 
-            { 
-                appBuilder.Use(async (context, next) => 
-                { 
-                    var error = context.Features[typeof(IExceptionHandlerFeature)] as IExceptionHandlerFeature; 
+            app.UseExceptionHandler(appBuilder =>
+            {
+                appBuilder.Use(async (context, next) =>
+                {
+                    var error = context.Features[typeof(IExceptionHandlerFeature)] as IExceptionHandlerFeature;
                     // 认证失败 
-                    if (error != null && error.Error is SecurityTokenExpiredException) 
-                    { 
-                        context.Response.StatusCode = 401; 
-                        context.Response.ContentType = "application/json"; 
+                    if (error != null && error.Error is SecurityTokenExpiredException)
+                    {
+                        context.Response.StatusCode = 401;
+                        context.Response.ContentType = "application/json";
 
-                        await context.Response.WriteAsync(JsonConvert.SerializeObject(new Response 
-                        { 
-                            State = RequestState.NotAuth, 
-                            Msg = "token expired" 
-                        })); 
-                    } 
+                        await context.Response.WriteAsync(JsonConvert.SerializeObject(new Response
+                        {
+                            State = RequestState.NotAuth,
+                            Msg = "token expired"
+                        }));
+                    }
                     // 服务器内部错误
-                    else if (error != null && error.Error != null) 
-                    { 
-                        context.Response.StatusCode = 500; 
-                        context.Response.ContentType = "application/json"; 
-                        await context.Response.WriteAsync(JsonConvert.SerializeObject(new Response 
-                        { 
-                            State = RequestState.Failed, 
-                            Msg = error.Error.Message 
-                        })); 
-                    } 
+                    else if (error != null && error.Error != null)
+                    {
+                        context.Response.StatusCode = 500;
+                        context.Response.ContentType = "application/json";
+                        await context.Response.WriteAsync(JsonConvert.SerializeObject(new Response
+                        {
+                            State = RequestState.Failed,
+                            Msg = error.Error.Message
+                        }));
+                    }
                     // 没有错误 
-                    else await next(); 
-                }); 
-            }); 
+                    else await next();
+                });
+            });
 
 
-            app.UseJwtBearerAuthentication(new JwtBearerOptions() 
-            { 
-                TokenValidationParameters = new TokenValidationParameters() 
-                { 
-                    IssuerSigningKey = TokenAuthOption.Key, 
-                    ValidAudience = TokenAuthOption.Audience, 
-                    ValidIssuer = TokenAuthOption.Issuer, 
+            app.UseJwtBearerAuthentication(new JwtBearerOptions()
+            {
+                TokenValidationParameters = new TokenValidationParameters()
+                {
+                    IssuerSigningKey = TokenAuthOption.Key,
+                    ValidAudience = TokenAuthOption.Audience,
+                    ValidIssuer = TokenAuthOption.Issuer,
                     // 验证签名密钥是否正确
-                    ValidateIssuerSigningKey = true, 
+                    ValidateIssuerSigningKey = true,
                     // 验证令牌是否超出有效期
-                    ValidateLifetime = true, 
+                    ValidateLifetime = true,
                     // 令牌的时间偏差。增加令牌的有效期以方便认证。此处设为0。
-                    ClockSkew = TimeSpan.FromMinutes(0) 
-                } 
-            }); 
+                    ClockSkew = TimeSpan.FromMinutes(0)
+                }
+            });
+
+            app.UseCors(builder =>
+                builder.WithOrigins("http://localhost:8080").AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod()
+            );
 
             app.UseMvc();
             app.UseSwagger();
