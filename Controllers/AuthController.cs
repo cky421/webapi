@@ -15,11 +15,11 @@ using WebApi.Common;
 namespace WebApi.Controllers
 {
     [Route("api/v1/[controller]")]
-    public class AuthController : Controller
+    public class authController : Controller
     {
         private readonly IUserRepository users;
         private readonly ILogger logger;
-        public AuthController(IUserRepository users, ILogger<AuthController> logger)
+        public authController(IUserRepository users, ILogger<authController> logger)
         {
             this.users = users;
             this.logger = logger;
@@ -38,8 +38,8 @@ namespace WebApi.Controllers
 
                 return JsonConvert.SerializeObject(new Response
                 {
-                    State = RequestState.Success,
-                    Data = new
+                    state = RequestState.Success,
+                    data = new
                     {
                         requertAt = requestAt,
                         expiresIn = TokenAuthOption.ExpiresSpan.TotalSeconds,
@@ -52,8 +52,8 @@ namespace WebApi.Controllers
             {
                 return JsonConvert.SerializeObject(new Response
                 {
-                    State = RequestState.Failed,
-                    Msg = "Username or password is invalid"
+                    state = RequestState.Failed,
+                    msg = "Username or password is invalid"
                 });
             }
         }
@@ -88,8 +88,8 @@ namespace WebApi.Controllers
 
             return JsonConvert.SerializeObject(new Response
             {
-                State = RequestState.Success,
-                Data = new
+                state = RequestState.Success,
+                data = new
                 {
                     UserName = claimsIdentity.Name
                 }
