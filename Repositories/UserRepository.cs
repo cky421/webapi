@@ -2,6 +2,7 @@ using System;
 using WebApi.Models;
 using MongoDB.Driver;
 using MongoDB.Bson;
+using WebApi.Common;
 
 namespace WebApi.Repositories
 {
@@ -10,8 +11,8 @@ namespace WebApi.Repositories
         private IMongoCollection<User> users;
         public UserRepository()
         {
-            var client = new MongoClient("mongodb://localhost:27017");
-            users = client.GetDatabase("OneThing").GetCollection<User>("User");
+            var client = new MongoClient(Config.MongoDbConnection);
+            users = client.GetDatabase(Config.ApplicationName).GetCollection<User>("User");
 
             if (FindAdmin() == null)
             {
@@ -28,12 +29,12 @@ namespace WebApi.Repositories
 
         private void InsertAdmin()
         {
-            users.InsertOne(new User(){ _id =ObjectId.GenerateNewId(), Username = "admin", Password = "admin"});
+            users.InsertOne(new User(){ _id =ObjectId.GenerateNewId(), Username = Config.AdminName, Password = Config.AdminPwd});
         }
 
         private User FindAdmin()
         {
-            return this.Find("admin", "admin");
+            return this.Find(Config.AdminName, Config.AdminPwd);
         }
     }
 }

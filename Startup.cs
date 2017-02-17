@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using WebApi.Common.Auth;
 using WebApi.Models;
 using WebApi.Repositories;
+using WebApi.Common;
 
 namespace WebApi
 {
@@ -34,7 +35,7 @@ namespace WebApi
         {
             services.AddAuthorization(auth =>
             {
-                auth.AddPolicy("Bearer", new AuthorizationPolicyBuilder()
+                auth.AddPolicy(Config.IdentityType, new AuthorizationPolicyBuilder()
                     .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme‌​)
                     .RequireAuthenticatedUser().Build());
             });
@@ -101,7 +102,7 @@ namespace WebApi
             });
 
             app.UseCors(builder =>
-                builder.WithOrigins("http://localhost:8080").AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod()
+                builder.WithOrigins(Config.Origins).AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod()
             );
 
             app.UseMvc();
