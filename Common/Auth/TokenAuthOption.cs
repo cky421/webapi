@@ -1,6 +1,5 @@
 using System;
 using Microsoft.IdentityModel.Tokens;
-using webapi.Common;
 
 namespace WebApi.Common.Auth
 {
