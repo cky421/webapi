@@ -33,8 +33,8 @@ dist
 tmp
 
 # Database
-src/Database/*
-!src/Database/.gitkeep
+src/WebApi/Database/*
+!src/WebApi/Database/.gitkeep
 
 # Log
 Logs
