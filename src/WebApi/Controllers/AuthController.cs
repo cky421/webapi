@@ -19,15 +19,26 @@ namespace WebApi.Controllers
     {
         private readonly IUserRepository _users;
         private readonly ILogger _logger;
-        public AuthController(IUserRepository users, ILogger logger)
+        public AuthController(IUserRepository users, ILogger<AuthController> logger)
         {
-            this._users = users;
-            this._logger = logger;
+            _users = users;
+            _logger = logger;
         }
 
         [HttpPost]
         public string Post([FromBody]User user)
         {
+            if (user == null)
+            {
+                _logger.LogInformation("User passed is null");
+                return JsonConvert.SerializeObject(new Response
+                {
+                    state = ResponseState.Failed,
+                    msg = "Username and password are empty"
+                });
+            }
+
+            _logger.LogInformation("User name:{0}", user?.Username);
             var existUser = _users.Find(user.Username, user.Password);
 
             if (existUser != null)
