@@ -20,11 +20,11 @@ This is the webapi server for my Router.
 * Run `dotnet restore tests/WebApi.Tests` to install the dependencies for C#.
 * Run `dotnet test src/WebApi.Tests` to start tests.  
 ```
-Note: Ensure mongodb is run if you want to run IntegrationTest.
+Note: Ensure mongodb is running if you want to run IntegrationTest.
 ```
 
 ## License
 
-Copyright (c) Microsoft Corporation. All rights reserved.
+Copyright (c) youngytj. All rights reserved.
 
 Licensed under the [MIT](LICENSE) License.
