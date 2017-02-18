@@ -1,0 +1,17 @@
+language: csharp
+matrix:
+  include:
+    - os: osx
+      osx_image: xcode8.2
+      mono: none
+      dotnet: 1.0.0-preview2-1-003177
+      before_install:
+        - brew install openssl
+        - ln -s /usr/local/opt/openssl/lib/libcrypto.1.0.0.dylib /usr/local/lib/
+        - ln -s /usr/local/opt/openssl/lib/libssl.1.0.0.dylib /usr/local/lib/
+install:
+  - dotnet restore src/webapi
+  - dotnet restore tests/WebApi.Tests
+script:
+  - ulimit -n 2048
+  - dotnet test tests/WebApi.Tests
