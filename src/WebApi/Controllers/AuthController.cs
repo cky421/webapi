@@ -38,7 +38,7 @@ namespace WebApi.Controllers
 
                 return JsonConvert.SerializeObject(new Response
                 {
-                    state = RequestState.Success,
+                    state = ResponseState.Success,
                     data = new
                     {
                         requertAt = requestAt,
@@ -52,7 +52,7 @@ namespace WebApi.Controllers
             {
                 return JsonConvert.SerializeObject(new Response
                 {
-                    state = RequestState.Failed,
+                    state = ResponseState.Failed,
                     msg = "Username or password is invalid"
                 });
             }
@@ -88,7 +88,7 @@ namespace WebApi.Controllers
 
             return JsonConvert.SerializeObject(new Response
             {
-                state = RequestState.Success,
+                state = ResponseState.Success,
                 data = new
                 {
                     UserName = claimsIdentity.Name

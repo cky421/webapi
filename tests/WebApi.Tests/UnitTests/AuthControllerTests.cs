@@ -25,7 +25,7 @@ namespace WebApi.Tests.UnitTest
             var result = auth.POST(user);
 
             Response response = JsonConvert.DeserializeObject<Response>(result);
-            Assert.Equal(RequestState.Success, response.state);
+            Assert.Equal(ResponseState.Success, response.state);
         }
     }
 }

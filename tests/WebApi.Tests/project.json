@@ -7,7 +7,8 @@
         "dotnet-test-xunit": "2.2.0-preview2-build1029",
         "NSubstitute": "2.0.1-rc",
         "Moq": "4.6.38-alpha",
-        "Microsoft.DotNet.InternalAbstractions": "1.0.500-preview2-1-003177"
+        "Microsoft.DotNet.InternalAbstractions": "1.0.500-preview2-1-003177",
+        "Microsoft.AspNetCore.TestHost": "1.1.0"
     },
     "frameworks": {
         "netcoreapp1.1": {
