@@ -1,6 +1,6 @@
 namespace WebApi.Models
 {
-    public enum RequestState
+    public enum ResponseState
     {
         Failed = -1,
         NotAuth = 0,

@@ -20,3 +20,5 @@ test_script:
 cache:
   - '%USERPROFILE%\.nuget\packages'
 deploy: off
+services:
+  - mongodb
