@@ -1,13 +1,13 @@
-using Moq;
-using Xunit;
 using Microsoft.Extensions.Logging;
-using WebApi.Repositories;
-using WebApi.Controllers;
-using WebApi.Common;
-using WebApi.Models;
+using Moq;
 using Newtonsoft.Json;
+using WebApi.Common;
+using WebApi.Controllers;
+using WebApi.Models;
+using WebApi.Repositories;
+using Xunit;
 
-namespace WebApi.Tests.UnitTest
+namespace WebApi.Tests.UnitTests
 {
     public class AuthControllerTests
     {
@@ -15,16 +15,18 @@ namespace WebApi.Tests.UnitTest
         public void TestGetAuthToken()
         {
             var mockRepo = new Mock<IUserRepository>();
-            User user = new User();
-            user.Username = Config.AdminName;
-            user.Password = Config.AdminPwd;
+            var user = new User
+            {
+                Username = Config.AdminName,
+                Password = Config.AdminPwd
+            };
             mockRepo.Setup(repo => repo.Find(Config.AdminName, Config.AdminPwd)).Returns(user);
             var mockLog = new Mock<ILogger<AuthController>>();
 
             var auth = new AuthController(mockRepo.Object, mockLog.Object);
-            var result = auth.POST(user);
+            var result = auth.Post(user);
 
-            Response response = JsonConvert.DeserializeObject<Response>(result);
+            var response = JsonConvert.DeserializeObject<Response>(result);
             Assert.Equal(ResponseState.Success, response.state);
         }
     }

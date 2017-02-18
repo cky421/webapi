@@ -1,18 +1,17 @@
-using System;
-using WebApi.Models;
-using MongoDB.Driver;
 using MongoDB.Bson;
+using MongoDB.Driver;
 using WebApi.Common;
+using WebApi.Models;
 
 namespace WebApi.Repositories
 {
     public class UserRepository: IUserRepository
     {
-        private IMongoCollection<User> users;
+        private readonly IMongoCollection<User> _users;
         public UserRepository()
         {
             var client = new MongoClient(Config.MongoDbConnection);
-            users = client.GetDatabase(Config.ApplicationName).GetCollection<User>("User");
+            _users = client.GetDatabase(Config.ApplicationName).GetCollection<User>("User");
 
             if (FindAdmin() == null)
             {
@@ -20,21 +19,21 @@ namespace WebApi.Repositories
             }
         }
 
-        public User Find(String username, String password)
+        public User Find(string username, string password)
         {
             var builder = Builders<User>.Filter;
             var filter = builder.Eq("Username", username) & builder.Eq("Password", password);
-            return users.Find(filter).FirstOrDefault();
+            return _users.Find(filter).FirstOrDefault();
         }
 
         private void InsertAdmin()
         {
-            users.InsertOne(new User(){ _id =ObjectId.GenerateNewId(), Username = Config.AdminName, Password = Config.AdminPwd});
+            _users.InsertOne(new User { _id =ObjectId.GenerateNewId(), Username = Config.AdminName, Password = Config.AdminPwd});
         }
 
         private User FindAdmin()
         {
-            return this.Find(Config.AdminName, Config.AdminPwd);
+            return Find(Config.AdminName, Config.AdminPwd);
         }
     }
 }

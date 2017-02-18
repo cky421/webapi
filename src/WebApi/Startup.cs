@@ -1,19 +1,19 @@
 using System;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Configuration;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using WebApi.Common;
 using WebApi.Common.Auth;
 using WebApi.Models;
 using WebApi.Repositories;
-using WebApi.Common;
 
 namespace WebApi
 {
@@ -57,7 +57,7 @@ namespace WebApi
                 {
                     var error = context.Features[typeof(IExceptionHandlerFeature)] as IExceptionHandlerFeature;
                     // 认证失败 
-                    if (error != null && error.Error is SecurityTokenExpiredException)
+                    if (error?.Error is SecurityTokenExpiredException)
                     {
                         context.Response.StatusCode = 401;
                         context.Response.ContentType = "application/json";
@@ -69,7 +69,7 @@ namespace WebApi
                         }));
                     }
                     // 服务器内部错误
-                    else if (error != null && error.Error != null)
+                    else if (error?.Error != null)
                     {
                         context.Response.StatusCode = 500;
                         context.Response.ContentType = "application/json";
@@ -85,9 +85,9 @@ namespace WebApi
             });
 
 
-            app.UseJwtBearerAuthentication(new JwtBearerOptions()
+            app.UseJwtBearerAuthentication(new JwtBearerOptions
             {
-                TokenValidationParameters = new TokenValidationParameters()
+                TokenValidationParameters = new TokenValidationParameters
                 {
                     IssuerSigningKey = TokenAuthOption.Key,
                     ValidAudience = TokenAuthOption.Audience,

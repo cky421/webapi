@@ -1,34 +1,34 @@
 using System;
-using Microsoft.AspNetCore.Mvc;
-using WebApi.Common.Auth;
 using System.IdentityModel.Tokens.Jwt;
-using Newtonsoft.Json;
 using System.Security.Claims;
 using System.Security.Principal;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
+using WebApi.Common;
+using WebApi.Common.Auth;
 using WebApi.Models;
 using WebApi.Repositories;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.Logging;
-using WebApi.Common;
 
 namespace WebApi.Controllers
 {
     [Route("api/v1/[controller]")]
     public class AuthController : Controller
     {
-        private readonly IUserRepository users;
-        private readonly ILogger logger;
-        public AuthController(IUserRepository users, ILogger<AuthController> logger)
+        private readonly IUserRepository _users;
+        private readonly ILogger _logger;
+        public AuthController(IUserRepository users, ILogger logger)
         {
-            this.users = users;
-            this.logger = logger;
+            this._users = users;
+            this._logger = logger;
         }
 
         [HttpPost]
-        public string POST([FromBody]User user)
+        public string Post([FromBody]User user)
         {
-            var existUser = users.Find(user.Username, user.Password);
+            var existUser = _users.Find(user.Username, user.Password);
 
             if (existUser != null)
             {
@@ -58,11 +58,11 @@ namespace WebApi.Controllers
             }
         }
 
-        private string GenerateToken(User user, DateTime expires)
+        private static string GenerateToken(User user, DateTime expires)
         {
             var handler = new JwtSecurityTokenHandler();
 
-            ClaimsIdentity identity = new ClaimsIdentity(
+            var identity = new ClaimsIdentity(
                 new GenericIdentity(user.Username, Config.GenericIdentityType),
                 new[] {
                     new Claim("_id", user._id.ToString())
@@ -82,18 +82,25 @@ namespace WebApi.Controllers
 
         [HttpGet]
         [Authorize(Config.IdentityType)]
-        public string GET()
+        public string Get()
         {
             var claimsIdentity = User.Identity as ClaimsIdentity;
 
+            if (claimsIdentity != null)
+                return JsonConvert.SerializeObject(new Response
+                {
+                    state = ResponseState.Success,
+                    data = new
+                    {
+                        UserName = claimsIdentity.Name
+                    }
+                });
             return JsonConvert.SerializeObject(new Response
             {
-                state = ResponseState.Success,
-                data = new
-                {
-                    UserName = claimsIdentity.Name
-                }
+                state = ResponseState.Failed,
+                msg = "User is unidentity."
             });
+
         }
     }
 }

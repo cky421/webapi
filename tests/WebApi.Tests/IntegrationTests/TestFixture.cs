@@ -15,7 +15,7 @@ namespace WebApi.Tests.IntegrationTests
     public class TestFixture<TStartup> : IDisposable
     {
         private const string SolutionName = "WebApi.sln";
-        private readonly TestServer server;
+        private readonly TestServer _server;
 
         public HttpClient Client { get; }
 
@@ -34,16 +34,16 @@ namespace WebApi.Tests.IntegrationTests
                 .UseEnvironment("Development")
                 .UseStartup(typeof(TStartup));
 
-            server = new TestServer(builder);
+            _server = new TestServer(builder);
 
-            Client = server.CreateClient();
+            Client = _server.CreateClient();
             Client.BaseAddress = new Uri("http://localhost");
         }
 
         public void Dispose()
         {
             Client.Dispose();
-            server.Dispose();
+            _server.Dispose();
         }
 
         protected virtual void InitializeServices(IServiceCollection services)
