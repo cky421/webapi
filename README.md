@@ -2,10 +2,10 @@
 # Introduction
 This is the webapi server for my Router.
 
-[![Status](https://raw.githubusercontent.com/SmartCentre/webapi/master/badges/Status.svg)]()
-[![Platform](https://raw.githubusercontent.com/SmartCentre/webapi/master/badges/Platform.svg)](https://www.microsoft.com/net/core)
-[![Lanuage](https://raw.githubusercontent.com/SmartCentre/webapi/master/badges/Language.svg)](https://www.microsoft.com/net/tutorials/csharp/getting-started)
-[![License](https://raw.githubusercontent.com/SmartCentre/webapi/master/badges/License.svg)](LICENSE)
+[![Status](https://img.shields.io/badge/Status-WIP-yellow.svg)]()
+[![Platform](https://img.shields.io/badge/Platform-.Net%20Core-blue.svg)](https://www.microsoft.com/net/core)
+[![Lanuage](https://img.shields.io/badge/Language-C%23-brightgreen.svg)](https://www.microsoft.com/net/tutorials/csharp/getting-started)
+[![License](https://poser.pugx.org/badges/poser/license.svg)](LICENSE) 
 [![Build status](https://ci.appveyor.com/api/projects/status/6ishyo97cu16v9ys?svg=true)](https://ci.appveyor.com/project/youngytj/webapi)  
 
 ## Quick Start
