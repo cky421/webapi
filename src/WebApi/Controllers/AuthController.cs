@@ -15,11 +15,11 @@ using WebApi.Common;
 namespace WebApi.Controllers
 {
     [Route("api/v1/[controller]")]
-    public class authController : Controller
+    public class AuthController : Controller
     {
         private readonly IUserRepository users;
         private readonly ILogger logger;
-        public authController(IUserRepository users, ILogger<authController> logger)
+        public AuthController(IUserRepository users, ILogger<AuthController> logger)
         {
             this.users = users;
             this.logger = logger;
