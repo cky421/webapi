@@ -2,8 +2,11 @@
 # Introduction
 This is the webapi server for my Router.
 
-
-[![License](https://poser.pugx.org/badges/poser/license.svg)](LICENSE) [![Build status](https://ci.appveyor.com/api/projects/status/6ishyo97cu16v9ys?svg=true)](https://ci.appveyor.com/project/youngytj/webapi)  
+[![Status](badges/Status.svg)]()
+[![Platform](badges/Platform.svg)](https://www.microsoft.com/net/core)
+[![Lanuage](badges/Language.svg)](https://msdn.microsoft.com/library/aa288436(v=vs.71).aspx)
+[![License](badges/License.svg)](LICENSE)
+[![Build status](https://ci.appveyor.com/api/projects/status/6ishyo97cu16v9ys?svg=true)](https://ci.appveyor.com/project/youngytj/webapi)  
 
 ## Quick Start
 * Download and install [node](https://nodejs.org/en/), [mongodb](https://www.mongodb.com/download-center?jmp=nav#community) and [.net core](https://www.microsoft.com/net/core)
@@ -15,7 +18,8 @@ This is the webapi server for my Router.
 
 ## Test
 * Run `dotnet restore tests/WebApi.Tests` to install the dependencies for C#.
-* Run `dotnet test src/WebApi.Tests` to start tests.
+* Run `dotnet test src/WebApi.Tests` to start tests.  
+> _Note: Ensure mongodb is run if you want to run IntegrationTest._
 
 ## License
 
