@@ -33,40 +33,30 @@ namespace WebApi.Controllers
                 _logger.LogInformation("User passed is null");
                 return JsonConvert.SerializeObject(new Response
                 {
-                    state = ResponseState.Failed,
-                    msg = "Username and password are empty"
+                    Message = "Username and password are empty"
                 });
             }
 
-            _logger.LogInformation("User name:{0}", user?.Username);
+            _logger.LogInformation("User name:{0}", user.Username);
             var existUser = _users.Find(user.Username, user.Password);
 
-            if (existUser != null)
-            {
-                var requestAt = DateTime.Now;
-                var expiresIn = requestAt + TokenAuthOption.ExpiresSpan;
-                var token = GenerateToken(existUser, expiresIn);
+            if (existUser == null)
+                return JsonConvert.SerializeObject(new Response
+                {
+                    Message = "Username or password is invalid"
+                });
+            var expiresIn = DateTime.Now + TokenAuthOption.ExpiresSpan;
+            var accessToken = GenerateToken(existUser, expiresIn);
 
-                return JsonConvert.SerializeObject(new Response
-                {
-                    state = ResponseState.Success,
-                    data = new
-                    {
-                        requertAt = requestAt,
-                        expiresIn = TokenAuthOption.ExpiresSpan.TotalSeconds,
-                        tokeyType = TokenAuthOption.TokenType,
-                        accessToken = token
-                    }
-                });
-            }
-            else
+            return JsonConvert.SerializeObject(new Response
             {
-                return JsonConvert.SerializeObject(new Response
+                Data = new
                 {
-                    state = ResponseState.Failed,
-                    msg = "Username or password is invalid"
-                });
-            }
+                    expire = TokenAuthOption.ExpiresSpan.TotalSeconds,
+                    type = TokenAuthOption.TokenType,
+                    token = accessToken
+                }
+            });
         }
 
         private static string GenerateToken(User user, DateTime expires)
@@ -100,16 +90,14 @@ namespace WebApi.Controllers
             if (claimsIdentity != null)
                 return JsonConvert.SerializeObject(new Response
                 {
-                    state = ResponseState.Success,
-                    data = new
+                    Data = new
                     {
                         UserName = claimsIdentity.Name
                     }
                 });
             return JsonConvert.SerializeObject(new Response
             {
-                state = ResponseState.Failed,
-                msg = "User is unidentity."
+                Message = "User is unidentity."
             });
 
         }

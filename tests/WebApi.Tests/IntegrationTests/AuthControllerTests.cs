@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using WebApi.Common;
 using WebApi.Models;
@@ -26,7 +27,8 @@ namespace WebApi.Tests.IntegrationTests
             var response = await _client.PostAsJsonAsync("/api/v1/auth", user);
             response.EnsureSuccessStatusCode();
             var responseContent = await response.Content.ReadAsJsonAsync<Response>();
-            Assert.Equal(ResponseState.Success, responseContent.state);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.NotNull(responseContent.Data);
         }
     }
 }

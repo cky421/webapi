@@ -1,3 +1,4 @@
+using System.Net;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json;
@@ -27,7 +28,8 @@ namespace WebApi.Tests.UnitTests
             var result = auth.Post(user);
 
             var response = JsonConvert.DeserializeObject<Response>(result);
-            Assert.Equal(ResponseState.Success, response.state);
+            Assert.Null(response.Message);
+            Assert.NotNull(response.Data);
         }
     }
 }

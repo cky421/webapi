@@ -64,8 +64,7 @@ namespace WebApi
 
                         await context.Response.WriteAsync(JsonConvert.SerializeObject(new Response
                         {
-                            state = ResponseState.NotAuth,
-                            msg = "token expired"
+                            Message = "token expired"
                         }));
                     }
                     // 服务器内部错误
@@ -75,8 +74,7 @@ namespace WebApi
                         context.Response.ContentType = "application/json";
                         await context.Response.WriteAsync(JsonConvert.SerializeObject(new Response
                         {
-                            state = ResponseState.Failed,
-                            msg = error.Error.Message
+                            Message = error.Error.Message
                         }));
                     }
                     // 没有错误 
