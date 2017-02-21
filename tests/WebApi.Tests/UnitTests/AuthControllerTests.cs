@@ -1,12 +1,12 @@
-using System.Net;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json;
 using WebApi.Common;
 using WebApi.Controllers;
 using WebApi.Models;
+using WebApi.Models.Mongodb;
 using WebApi.Models.Responses;
-using WebApi.Repositories;
+using WebApi.Repositories.Interfaces;
 using Xunit;
 
 namespace WebApi.Tests.UnitTests

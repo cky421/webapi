@@ -12,8 +12,9 @@ using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using WebApi.Common;
 using WebApi.Common.Auth;
-using WebApi.Models;
+using WebApi.Models.Responses;
 using WebApi.Repositories;
+using WebApi.Repositories.Interfaces;
 
 namespace WebApi
 {

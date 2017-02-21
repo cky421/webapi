@@ -1,6 +1,6 @@
-using WebApi.Models;
+using WebApi.Models.Mongodb;
 
-namespace WebApi.Repositories
+namespace WebApi.Repositories.Interfaces
 {
     public interface IUserRepository
     {

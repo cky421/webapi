@@ -9,9 +9,9 @@ using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using WebApi.Common;
 using WebApi.Common.Auth;
-using WebApi.Models;
+using WebApi.Models.Mongodb;
 using WebApi.Models.Responses;
-using WebApi.Repositories;
+using WebApi.Repositories.Interfaces;
 
 namespace WebApi.Controllers
 {
@@ -68,7 +68,7 @@ namespace WebApi.Controllers
             var identity = new ClaimsIdentity(
                 new GenericIdentity(user.Username, Config.GenericIdentityType),
                 new[] {
-                    new Claim("_id", user._id.ToString())
+                    new Claim("userid", user.UserId)
                 }
             );
 

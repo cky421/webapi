@@ -1,7 +1,7 @@
-using MongoDB.Bson;
 using MongoDB.Driver;
 using WebApi.Common;
-using WebApi.Models;
+using WebApi.Models.Mongodb;
+using WebApi.Repositories.Interfaces;
 
 namespace WebApi.Repositories
 {
@@ -28,7 +28,7 @@ namespace WebApi.Repositories
 
         private void InsertAdmin()
         {
-            _users.InsertOne(new User { _id =ObjectId.GenerateNewId(), Username = Config.AdminName, Password = Config.AdminPwd});
+            _users.InsertOne(new User { Username = Config.AdminName, Password = Config.AdminPwd});
         }
 
         private User FindAdmin()

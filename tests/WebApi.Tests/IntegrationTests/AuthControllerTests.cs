@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using WebApi.Common;
 using WebApi.Models;
+using WebApi.Models.Mongodb;
 using WebApi.Models.Responses;
 using Xunit;
 
