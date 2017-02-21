@@ -10,7 +10,7 @@ namespace WebApi.Models.Mongodb
         [BsonElement("GroupName")]
         public string GroupName { get; set; }
         [BsonElement("UserId")]
-        public Guid UserId { get; set; }
+        public string UserId { get; set; }
 
         public Group()
         {

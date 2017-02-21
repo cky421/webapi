@@ -10,12 +10,13 @@ using Newtonsoft.Json;
 using WebApi.Common;
 using WebApi.Common.Auth;
 using WebApi.Models.Mongodb;
+using WebApi.Models.Requests;
 using WebApi.Models.Responses;
 using WebApi.Repositories.Interfaces;
 
-namespace WebApi.Controllers
+namespace WebApi.Controllers.V1
 {
-    [Route("api/v1/[controller]")]
+    [Route("api/v1/auth")]
     public class AuthController : Controller
     {
         private readonly IUserRepository _users;
@@ -27,7 +28,7 @@ namespace WebApi.Controllers
         }
 
         [HttpPost]
-        public string Post([FromBody]User user)
+        public string Post([FromBody]AuthRequest user)
         {
             if (user == null)
             {
