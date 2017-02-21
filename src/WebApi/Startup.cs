@@ -44,6 +44,7 @@ namespace WebApi
             services.AddMvc();
             services.AddSwaggerGen();
             services.AddSingleton<IUserRepository, UserRepository>();
+            services.AddSingleton<IGroupRepository, GroupRepository>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)

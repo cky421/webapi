@@ -2,6 +2,7 @@ using MongoDB.Driver;
 using WebApi.Common;
 using WebApi.Models.Mongodb;
 using WebApi.Repositories.Interfaces;
+using static WebApi.Models.Mongodb.Fields;
 
 namespace WebApi.Repositories
 {
@@ -21,8 +22,7 @@ namespace WebApi.Repositories
 
         public User Find(string username, string password)
         {
-            var builder = Builders<User>.Filter;
-            var filter = builder.Eq("Username", username) & builder.Eq("Password", password);
+            var filter = Builders<User>.Filter.Eq(UsernameField, username) & Builders<User>.Filter.Eq(PasswordField, password);
             return _users.Find(filter).FirstOrDefault();
         }
 

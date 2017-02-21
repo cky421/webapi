@@ -29,6 +29,9 @@ obj
 # NPM Module
 node_modules
 
+# NPM debug log
+npm-debug.log
+
 # Webpack dist
 dist
 
