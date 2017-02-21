@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using WebApi.Common;
 using WebApi.Models;
 using WebApi.Models.Mongodb;
+using WebApi.Models.Requests;
 using WebApi.Models.Responses;
 using Xunit;
 
@@ -21,7 +22,7 @@ namespace WebApi.Tests.IntegrationTests
         [Fact]
         public async Task TestGetAuthToken()
         {
-            var user = new User
+            var user = new AuthRequest
             {
                 Username = Config.AdminName,
                 Password = Config.AdminPwd
