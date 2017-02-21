@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using WebApi.Common;
 using WebApi.Controllers;
 using WebApi.Models;
+using WebApi.Models.Responses;
 using WebApi.Repositories;
 using Xunit;
 
@@ -27,7 +28,7 @@ namespace WebApi.Tests.UnitTests
             var auth = new AuthController(mockRepo.Object, mockLog.Object);
             var result = auth.Post(user);
 
-            var response = JsonConvert.DeserializeObject<Response>(result);
+            var response = JsonConvert.DeserializeObject<Response<AuthResponse>>(result);
             Assert.Null(response.Message);
             Assert.NotNull(response.Data);
         }

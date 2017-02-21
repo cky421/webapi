@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using WebApi.Common;
 using WebApi.Models;
+using WebApi.Models.Responses;
 using Xunit;
 
 namespace WebApi.Tests.IntegrationTests
@@ -26,9 +27,9 @@ namespace WebApi.Tests.IntegrationTests
             };
             var response = await _client.PostAsJsonAsync("/api/v1/auth", user);
             response.EnsureSuccessStatusCode();
-            var responseContent = await response.Content.ReadAsJsonAsync<Response>();
+            var responseContent = await response.Content.ReadAsJsonAsync<Response<AuthResponse>>();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            Assert.NotNull(responseContent.Data);
+            Assert.NotNull(responseContent.Data.Username);
         }
     }
 }

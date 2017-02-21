@@ -1,13 +1,12 @@
-using System;
 using Newtonsoft.Json;
 
 namespace WebApi.Models
 {
-    public class Response
+    public class Response<T>
     {
         [JsonProperty("msg")]
         public string Message { get; set; }
         [JsonProperty("data")]
-        public object Data { get; set; }
+        public T Data { get; set; }
     }
 }
