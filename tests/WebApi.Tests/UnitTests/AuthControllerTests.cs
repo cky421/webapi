@@ -17,7 +17,12 @@ namespace WebApi.Tests.UnitTests
         public void TestGetAuthToken()
         {
             var mockRepo = new Mock<IUserRepository>();
-            var user = new User();
+            var user = new User
+            {
+                Username = Config.AdminName,
+                Password = Config.AdminPwd
+            };
+
             mockRepo.Setup(repo => repo.Find(Config.AdminName, Config.AdminPwd)).Returns(user);
             var mockLog = new Mock<ILogger<AuthController>>();
 
