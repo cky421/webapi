@@ -2,9 +2,13 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using WebApi.Common;
+using WebApi.Models.Mongodb;
 using WebApi.Models.Requests;
+using WebApi.Models.Responses;
 using WebApi.Repositories.Interfaces;
+using static WebApi.Common.Auth.ClaimsIdentityHelper;
 
 namespace WebApi.Controllers.V1
 {
@@ -21,26 +25,45 @@ namespace WebApi.Controllers.V1
             _logger = logger;
         }
 
-        [HttpPost("create")]
+        [HttpPost]
         public string Create([FromBody]CreateGroupRequest group)
         {
-            throw new NotImplementedException();
+            var userId = this.GetUserId();
+            var groupResult = _groups.InsertGroup(group.GroupName, userId);
+            return JsonConvert.SerializeObject(new Response<CreateGroupResponse>
+            {
+                Message = groupResult.Reason,
+                Data = new CreateGroupResponse
+                {
+                    GroupId = groupResult.Group?.GroupId,
+                    GroupName = groupResult.Group?.GroupName,
+                    UserId = groupResult.Group?.UserId,
+                    Succeed = groupResult.Result == Result.Succeed
+                }
+            });
+
         }
 
-        [HttpPost("update")]
+        [HttpPut]
         public string Update([FromBody]UpdateGroupRequest group)
         {
             throw new NotImplementedException();
         }
 
-        [HttpPost("delete")]
+        [HttpDelete]
         public string Delete([FromBody] DeleteGroupRequest group)
         {
             throw new NotImplementedException();
         }
 
-        [HttpGet("query")]
-        public string Query()
+        [HttpGet]
+        public string Fetch()
+        {
+            throw new NotImplementedException();
+        }
+
+        [HttpGet("{id}")]
+        public string Fetch([FromRoute] string id)
         {
             throw new NotImplementedException();
         }

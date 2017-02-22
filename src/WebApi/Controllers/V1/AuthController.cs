@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Principal;
@@ -66,13 +67,8 @@ namespace WebApi.Controllers.V1
         {
             var handler = new JwtSecurityTokenHandler();
 
-            var identity = new ClaimsIdentity(
-                new GenericIdentity(user.Username, Config.GenericIdentityType),
-                new[] {
-                    new Claim("userid", user.UserId)
-                }
-            );
-
+            var claims = new List<Claim> {new Claim(ClaimTypes.PrimarySid, user.UserId)};
+            var identity = new ClaimsIdentity(claims, user.Username);
             var securityToken = handler.CreateToken(new SecurityTokenDescriptor
             {
                 Issuer = TokenAuthOption.Issuer,
