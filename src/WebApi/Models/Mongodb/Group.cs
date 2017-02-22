@@ -24,6 +24,7 @@ namespace WebApi.Models.Mongodb
     {
         public Group Group { get; set; }
         public Result Result { get; set; }
+        public string Reason { get; set; } = "None";
     }
 
     public enum Result
