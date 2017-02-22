@@ -33,9 +33,9 @@ namespace WebApi.Tests.UnitTests
                 Password = Config.AdminPwd
             });
 
-            var response = JsonConvert.DeserializeObject<Response<AuthResponse>>(result);
+            var response = JsonConvert.DeserializeObject<AuthResponse>(result);
             Assert.Null(response.Message);
-            Assert.NotNull(response.Data);
+            Assert.NotNull(response.Token);
         }
     }
 }

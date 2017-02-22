@@ -26,46 +26,69 @@ namespace WebApi.Controllers.V1
         }
 
         [HttpPost]
-        public string Create([FromBody]CreateGroupRequest group)
+        public IActionResult Create([FromBody]CreateGroupRequest group)
         {
             var userId = this.GetUserId();
             var groupResult = _groups.InsertGroup(group.GroupName, userId);
-            return JsonConvert.SerializeObject(new Response<CreateGroupResponse>
-            {
-                Message = groupResult.Reason,
-                Data = new CreateGroupResponse
-                {
-                    GroupId = groupResult.Group?.GroupId,
-                    GroupName = groupResult.Group?.GroupName,
-                    UserId = groupResult.Group?.UserId,
-                    Succeed = groupResult.Result == Result.Succeed
-                }
-            });
-
+            return HandleGroupResult(groupResult);
         }
 
         [HttpPut]
-        public string Update([FromBody]UpdateGroupRequest group)
+        public IActionResult Update([FromBody]UpdateGroupRequest group)
         {
-            throw new NotImplementedException();
+            var userId = this.GetUserId();
+            var groupResult = _groups.UpdateGroup(group.NewGroupName, group.GroupId, userId);
+            return HandleGroupResult(groupResult);
         }
 
         [HttpDelete]
-        public string Delete([FromBody] DeleteGroupRequest group)
+        public IActionResult Delete([FromBody] DeleteGroupRequest group)
         {
-            throw new NotImplementedException();
+            var userId = this.GetUserId();
+            var groupResult = _groups.DeleteGroup(group.GroupId, userId);
+            return HandleGroupResult(groupResult);
         }
 
         [HttpGet]
-        public string Fetch()
+        public IActionResult Fetch()
         {
-            throw new NotImplementedException();
+            var userId = this.GetUserId();
+            var groups = _groups.GetAllGroupsByUserId(userId);
+            var response = new FetchGroupResponse(groups);
+            return Ok(JsonConvert.SerializeObject(response));
         }
 
         [HttpGet("{id}")]
-        public string Fetch([FromRoute] string id)
+        public IActionResult Fetch([FromRoute] string id)
         {
-            throw new NotImplementedException();
+            var userId = this.GetUserId();
+            var groupResult = _groups.GetGroup(id, userId);
+            return HandleGroupResult(groupResult);
+        }
+
+        private IActionResult HandleGroupResult(GroupResult groupResult)
+        {
+            var groupResponse = new GroupResponse(groupResult) {Message = groupResult.Reason};
+            var content = JsonConvert.SerializeObject(groupResponse);
+            IActionResult result = null;
+            switch (groupResult.Result)
+            {
+                case Result.Succeed:
+                    result = Ok(content);
+                    break;
+                case Result.Failed:
+                case Result.NotExists:
+                    result = NotFound(content);
+                    break;
+                case Result.Exists:
+                    result = BadRequest(content);
+                    break;
+                case Result.None:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            return result;
         }
     }
 }

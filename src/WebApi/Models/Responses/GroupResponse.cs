@@ -1,8 +1,9 @@
 ﻿using Newtonsoft.Json;
+using WebApi.Models.Mongodb;
 
 namespace WebApi.Models.Responses
 {
-    public class CreateGroupResponse
+    public class GroupResponse : Response
     {
         [JsonProperty("groupname")]
         public string GroupName { get; set; }
@@ -10,7 +11,12 @@ namespace WebApi.Models.Responses
         public string GroupId { get; set; }
         [JsonProperty("userid")]
         public string UserId { get; set; }
-        [JsonProperty("succeed")]
-        public bool Succeed { get; set; }
+
+        public GroupResponse(Group group)
+        {
+            GroupName = group.GroupName;
+            GroupId = group.GroupId;
+            UserId = group.UserId;
+        }
     }
 }

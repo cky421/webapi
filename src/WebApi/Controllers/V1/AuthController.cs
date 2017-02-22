@@ -34,7 +34,7 @@ namespace WebApi.Controllers.V1
             if (user == null)
             {
                 _logger.LogInformation("User passed is null");
-                return JsonConvert.SerializeObject(new Response<string>
+                return JsonConvert.SerializeObject(new Response
                 {
                     Message = "Username and password are empty"
                 });
@@ -44,22 +44,19 @@ namespace WebApi.Controllers.V1
             var existUser = _users.Find(user.Username, user.Password);
 
             if (existUser == null)
-                return JsonConvert.SerializeObject(new Response<string>
+                return JsonConvert.SerializeObject(new Response
                 {
                     Message = "Username or password is invalid"
                 });
             var expiresIn = DateTime.Now + TokenAuthOption.ExpiresSpan;
             var accessToken = GenerateToken(existUser, expiresIn);
 
-            return JsonConvert.SerializeObject(new Response<AuthResponse>
+            return JsonConvert.SerializeObject(new AuthResponse
             {
-                Data = new AuthResponse
-                {
-                    Expire = TokenAuthOption.ExpiresSpan.TotalSeconds,
-                    Type = TokenAuthOption.TokenType,
-                    Token = accessToken,
-                    Username = user.Username
-                }
+                Expire = TokenAuthOption.ExpiresSpan.TotalSeconds,
+                Type = TokenAuthOption.TokenType,
+                Token = accessToken,
+                Username = user.Username
             });
         }
 
@@ -87,14 +84,11 @@ namespace WebApi.Controllers.V1
             var claimsIdentity = User.Identity as ClaimsIdentity;
 
             if (claimsIdentity != null)
-                return JsonConvert.SerializeObject(new Response<AuthResponse>
+                return JsonConvert.SerializeObject(new AuthResponse
                 {
-                    Data = new AuthResponse
-                    {
-                        Username = claimsIdentity.Name
-                    }
+                    Username = claimsIdentity.Name
                 });
-            return JsonConvert.SerializeObject(new Response<string>
+            return JsonConvert.SerializeObject(new Response
             {
                 Message = "User is unidentity."
             });

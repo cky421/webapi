@@ -2,7 +2,7 @@
 
 namespace WebApi.Models.Responses
 {
-    public class AuthResponse
+    public class AuthResponse : Response
     {
         [JsonProperty("expire")]
         public double Expire { get; set; }

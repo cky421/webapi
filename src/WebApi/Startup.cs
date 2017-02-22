@@ -64,7 +64,7 @@ namespace WebApi
                         context.Response.StatusCode = 401;
                         context.Response.ContentType = "application/json";
 
-                        await context.Response.WriteAsync(JsonConvert.SerializeObject(new Response<string>
+                        await context.Response.WriteAsync(JsonConvert.SerializeObject(new Response
                         {
                             Message = "token expired"
                         }));
@@ -74,7 +74,7 @@ namespace WebApi
                     {
                         context.Response.StatusCode = 500;
                         context.Response.ContentType = "application/json";
-                        await context.Response.WriteAsync(JsonConvert.SerializeObject(new Response<string>
+                        await context.Response.WriteAsync(JsonConvert.SerializeObject(new Response
                         {
                             Message = error.Error.Message
                         }));

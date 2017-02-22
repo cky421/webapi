@@ -31,23 +31,20 @@ namespace WebApi.Repositories
             NullCheck(groupName, nameof(groupName));
             NullCheck(userId, nameof(userId));
 
-            var groupResult = new GroupResult
+            var groupResult = new GroupResult(new Group
             {
-                Group = new Group
-                {
-                    GroupName = groupName,
-                    UserId = userId
-                }
-            };
+                GroupName = groupName,
+                UserId = userId
+            });
 
             if (IsExisted(groupName, userId))
             {
-                groupResult.Result = Result.Exist;
+                groupResult.Result = Result.Exists;
                 groupResult.Reason = $"{groupName} is existed";
             }
             else
             {
-                _groups.InsertOne(groupResult.Group);
+                _groups.InsertOne(groupResult);
                 groupResult.Result = Result.Succeed;
             }
 
@@ -60,18 +57,15 @@ namespace WebApi.Repositories
             NullCheck(groupId, nameof(groupId));
             NullCheck(userId, nameof(userId));
 
-            var groupResult = new GroupResult
+            var groupResult = new GroupResult(new Group
             {
-                Group = new Group
-                {
-                    GroupId = groupId,
-                    UserId = userId
-                }
-            };
+                GroupId = groupId,
+                UserId = userId
+            });
 
             if (IsExisted(newGroupName, groupId, userId))
             {
-                groupResult.Result = Result.Exist;
+                groupResult.Result = Result.Exists;
                 groupResult.Reason = $"{newGroupName} is existed";
             }
             else
@@ -80,7 +74,7 @@ namespace WebApi.Repositories
                 var update = Builders<Group>.Update.Set(GroupNameField, newGroupName);
                 _groups.UpdateOne(filter, update);
                 groupResult.Result = Result.Succeed;
-                groupResult.Group.GroupName = newGroupName;
+                groupResult.GroupName = newGroupName;
             }
             return groupResult;
         }
@@ -90,20 +84,10 @@ namespace WebApi.Repositories
             NullCheck(groupId, nameof(groupId));
             NullCheck(userId, nameof(userId));
 
-            var groupResult = new GroupResult();
             var filter = Builders<Group>.Filter.Eq(GroupIdField, groupId) & Builders<Group>.Filter.Eq(UserIdField, userId);
             var group = _groups.Find(filter).FirstOrDefault();
-            if (group != null)
-            {
-                groupResult.Group = group;
-                groupResult.Result = Result.Succeed;
-            }
-            else
-            {
-                groupResult.Result = Result.Failed;
-                groupResult.Reason = "Can not find such group";
-            }
-            return groupResult;
+            return group != null ? new GroupResult(group) {Result = Result.Succeed} :
+                new GroupResult{ Result = Result.Failed, Reason = "Can not find such group"};
         }
 
         public GroupResult DeleteGroup(string groupId, string userId)
@@ -112,24 +96,21 @@ namespace WebApi.Repositories
             NullCheck(userId, nameof(userId));
 
             var queryResult = GetGroup(groupId, userId);
-            var groupResult = new GroupResult();
-            if (queryResult.Result == Result.Exist)
+            GroupResult groupResult;
+            if (queryResult.Result == Result.Exists)
             {
                 var filter = Builders<Group>.Filter.Eq(GroupIdField, groupId) & Builders<Group>.Filter.Eq(UserIdField, userId);
                 _groups.DeleteOne(filter);
-                groupResult.Group = queryResult.Group;
+                groupResult = queryResult;
             }
             else
             {
-                groupResult.Group = new Group
+                groupResult = new GroupResult(new Group{GroupId = groupId, UserId = userId})
                 {
-                    GroupId = groupId,
-                    UserId = userId
+                    Result = Result.NotExists,
+                    Reason = "Can not find such group"
                 };
-                groupResult.Result = Result.Failed;
-                groupResult.Reason = "Can not find such group";
             }
-
 
             return groupResult;
         }

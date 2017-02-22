@@ -1,5 +1,6 @@
 ﻿using System;
 using MongoDB.Bson.Serialization.Attributes;
+using Newtonsoft.Json;
 using static WebApi.Models.Mongodb.Fields;
 
 namespace WebApi.Models.Mongodb
@@ -8,10 +9,13 @@ namespace WebApi.Models.Mongodb
     {
 
         [BsonId]
+        [JsonProperty("groupid")]
         public string GroupId { get; set; }
         [BsonElement(GroupNameField)]
+        [JsonProperty("groupname")]
         public string GroupName { get; set; }
         [BsonElement(UserIdField)]
+        [JsonProperty("userid")]
         public string UserId { get; set; }
 
         public Group()
@@ -20,9 +24,22 @@ namespace WebApi.Models.Mongodb
         }
     }
 
-    public class GroupResult
+    public class GroupResult : Group
     {
-        public Group Group { get; set; }
+        public GroupResult()
+        {
+
+        }
+
+        public GroupResult(Group group)
+        {
+            if(group != null)
+            {
+                GroupId = group.GroupId;
+                GroupName = group.GroupName;
+                UserId = group.UserId;
+            }
+        }
         public Result Result { get; set; }
         public string Reason { get; set; } = "None";
     }
@@ -31,7 +48,8 @@ namespace WebApi.Models.Mongodb
     {
         None,
         Succeed,
-        Exist,
+        Exists,
+        NotExists,
         Failed
     }
 }
