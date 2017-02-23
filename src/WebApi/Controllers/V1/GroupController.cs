@@ -29,7 +29,7 @@ namespace WebApi.Controllers.V1
         public IActionResult Create([FromBody]CreateGroupRequest group)
         {
             var userId = this.GetUserId();
-            var groupResult = _groups.InsertGroup(group.GroupName, userId);
+            var groupResult = _groups.InsertGroup(group?.GroupName, userId);
             return HandleGroupResult(groupResult);
         }
 
@@ -37,7 +37,7 @@ namespace WebApi.Controllers.V1
         public IActionResult Update([FromBody]UpdateGroupRequest group)
         {
             var userId = this.GetUserId();
-            var groupResult = _groups.UpdateGroup(group.NewGroupName, group.GroupId, userId);
+            var groupResult = _groups.UpdateGroup(group?.NewGroupName, group?.GroupId, userId);
             return HandleGroupResult(groupResult);
         }
 
@@ -76,11 +76,11 @@ namespace WebApi.Controllers.V1
                 case Result.Succeed:
                     result = Ok(content);
                     break;
-                case Result.Failed:
                 case Result.NotExists:
                     result = NotFound(content);
                     break;
                 case Result.Exists:
+                case Result.Failed:
                     result = BadRequest(content);
                     break;
                 default:
