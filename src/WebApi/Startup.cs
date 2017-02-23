@@ -12,8 +12,9 @@ using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using WebApi.Common;
 using WebApi.Common.Auth;
-using WebApi.Models;
+using WebApi.Models.Responses;
 using WebApi.Repositories;
+using WebApi.Repositories.Interfaces;
 
 namespace WebApi
 {
@@ -43,6 +44,7 @@ namespace WebApi
             services.AddMvc();
             services.AddSwaggerGen();
             services.AddSingleton<IUserRepository, UserRepository>();
+            services.AddSingleton<IGroupRepository, GroupRepository>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
