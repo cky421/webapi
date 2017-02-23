@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -46,6 +47,43 @@ namespace WebApi.Tests.IntegrationTests.ControllerTests
             getResponse.EnsureSuccessStatusCode();
             var getResponseContent = await getResponse.Content.ReadAsJsonAsync<GroupResponse>();
             Assert.Equal(createGroupRequest.GroupName, getResponseContent.GroupName);
+        }
+
+        [Fact]
+        public async Task TestUpdateGroup()
+        {
+            var groupsResponse = await _client.GetAsync("/api/v1/password/group");
+            groupsResponse.EnsureSuccessStatusCode();
+            var groupsResponseContent = await groupsResponse.Content.ReadAsJsonAsync<FetchGroupResponse>();
+            Assert.NotNull(groupsResponseContent?.Groups);
+            Assert.NotEmpty(groupsResponseContent.Groups);
+            var group = groupsResponseContent.Groups[0];
+            var updateGroupRequest = new UpdateGroupRequest
+            {
+                GroupId = group.GroupId,
+                NewGroupName = "UpdateGroupName"
+            };
+            var updateGroupResponse = await _client.PutAsJsonAsync("/api/v1/password/group/", updateGroupRequest);
+            updateGroupResponse.EnsureSuccessStatusCode();
+            var getResponse = await _client.GetAsync($"/api/v1/password/group/{group.GroupId}");
+            getResponse.EnsureSuccessStatusCode();
+            var getResponseContent = await getResponse.Content.ReadAsJsonAsync<GroupResponse>();
+            Assert.Equal("UpdateGroupName", getResponseContent.GroupName);
+        }
+
+        [Fact]
+        public async Task TestDeleteGroup()
+        {
+            var groupsResponse = await _client.GetAsync("/api/v1/password/group");
+            groupsResponse.EnsureSuccessStatusCode();
+            var groupsResponseContent = await groupsResponse.Content.ReadAsJsonAsync<FetchGroupResponse>();
+            Assert.NotNull(groupsResponseContent?.Groups);
+            Assert.NotEmpty(groupsResponseContent.Groups);
+            var group = groupsResponseContent.Groups[0];
+            var deleteResponse = await _client.DeleteAsync($"/api/v1/password/group/{group.GroupId}");
+            deleteResponse.EnsureSuccessStatusCode();
+            var getResponse = await _client.GetAsync($"/api/v1/password/group/{group.GroupId}");
+            Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
         }
     }
 }

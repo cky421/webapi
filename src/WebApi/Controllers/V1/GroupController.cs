@@ -41,11 +41,11 @@ namespace WebApi.Controllers.V1
             return HandleGroupResult(groupResult);
         }
 
-        [HttpDelete]
-        public IActionResult Delete([FromBody] DeleteGroupRequest group)
+        [HttpDelete("{id}")]
+        public IActionResult Delete([FromRoute] string id)
         {
             var userId = this.GetUserId();
-            var groupResult = _groups.DeleteGroup(group.GroupId, userId);
+            var groupResult = _groups.DeleteGroup(id, userId);
             return HandleGroupResult(groupResult);
         }
 
@@ -82,8 +82,6 @@ namespace WebApi.Controllers.V1
                     break;
                 case Result.Exists:
                     result = BadRequest(content);
-                    break;
-                case Result.None:
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

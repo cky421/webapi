@@ -97,7 +97,7 @@ namespace WebApi.Repositories
 
             var queryResult = GetGroup(groupId, userId);
             GroupResult groupResult;
-            if (queryResult.Result == Result.Exists)
+            if (queryResult.Result == Result.Succeed)
             {
                 var filter = Builders<Group>.Filter.Eq(GroupIdField, groupId) & Builders<Group>.Filter.Eq(UserIdField, userId);
                 _groups.DeleteOne(filter);
