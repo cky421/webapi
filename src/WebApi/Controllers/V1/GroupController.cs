@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using WebApi.Common;
-using WebApi.Models.Mongodb;
+using WebApi.Models.QueryResult;
 using WebApi.Models.Requests;
 using WebApi.Models.Responses;
 using WebApi.Repositories.Interfaces;
@@ -28,32 +28,28 @@ namespace WebApi.Controllers.V1
         [HttpPost]
         public IActionResult Create([FromBody]CreateGroupRequest group)
         {
-            var userId = this.GetUserId();
-            var groupResult = _groups.InsertGroup(group?.GroupName, userId);
+            var groupResult = _groups.InsertGroup(group?.GroupName, this.GetUserId());
             return HandleGroupResult(groupResult);
         }
 
         [HttpPut]
         public IActionResult Update([FromBody]UpdateGroupRequest group)
         {
-            var userId = this.GetUserId();
-            var groupResult = _groups.UpdateGroup(group?.NewGroupName, group?.GroupId, userId);
+            var groupResult = _groups.UpdateGroup(group?.NewGroupName, group?.GroupId, this.GetUserId());
             return HandleGroupResult(groupResult);
         }
 
         [HttpDelete("{id}")]
         public IActionResult Delete([FromRoute] string id)
         {
-            var userId = this.GetUserId();
-            var groupResult = _groups.DeleteGroup(id, userId);
+            var groupResult = _groups.DeleteGroup(id, this.GetUserId());
             return HandleGroupResult(groupResult);
         }
 
         [HttpGet]
         public IActionResult Fetch()
         {
-            var userId = this.GetUserId();
-            var groups = _groups.GetAllGroupsByUserId(userId);
+            var groups = _groups.GetAllGroupsByUserId(this.GetUserId());
             var response = new FetchGroupResponse(groups);
             return Ok(JsonConvert.SerializeObject(response));
         }
@@ -61,8 +57,7 @@ namespace WebApi.Controllers.V1
         [HttpGet("{id}")]
         public IActionResult Fetch([FromRoute] string id)
         {
-            var userId = this.GetUserId();
-            var groupResult = _groups.GetGroup(id, userId);
+            var groupResult = _groups.GetGroup(id, this.GetUserId());
             return HandleGroupResult(groupResult);
         }
 
@@ -70,17 +65,17 @@ namespace WebApi.Controllers.V1
         {
             var groupResponse = new GroupResponse(groupResult) {Message = groupResult.Reason};
             var content = JsonConvert.SerializeObject(groupResponse);
-            IActionResult result = null;
+            IActionResult result;
             switch (groupResult.Result)
             {
-                case Result.Succeed:
+                case Results.Succeed:
                     result = Ok(content);
                     break;
-                case Result.NotExists:
+                case Results.NotExists:
                     result = NotFound(content);
                     break;
-                case Result.Exists:
-                case Result.Failed:
+                case Results.Exists:
+                case Results.Failed:
                     result = BadRequest(content);
                     break;
                 default:

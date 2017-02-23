@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using WebApi.Models.Mongodb;
+using WebApi.Models.QueryResult;
 
 namespace WebApi.Repositories.Interfaces
 {
