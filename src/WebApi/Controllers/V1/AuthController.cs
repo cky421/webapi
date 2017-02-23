@@ -1,19 +1,15 @@
 using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Principal;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using WebApi.Common;
 using WebApi.Common.Auth;
-using WebApi.Models.Mongodb;
 using WebApi.Models.Requests;
 using WebApi.Models.Responses;
 using WebApi.Repositories.Interfaces;
+using static WebApi.Common.Auth.ClaimsIdentityHelper;
 
 namespace WebApi.Controllers.V1
 {
@@ -58,23 +54,6 @@ namespace WebApi.Controllers.V1
                 Token = accessToken,
                 Username = user.Username
             });
-        }
-
-        private static string GenerateToken(User user, DateTime expires)
-        {
-            var handler = new JwtSecurityTokenHandler();
-
-            var claims = new List<Claim> {new Claim(ClaimTypes.PrimarySid, user.UserId)};
-            var identity = new ClaimsIdentity(claims, user.Username);
-            var securityToken = handler.CreateToken(new SecurityTokenDescriptor
-            {
-                Issuer = TokenAuthOption.Issuer,
-                Audience = TokenAuthOption.Audience,
-                SigningCredentials = TokenAuthOption.SigningCredentials,
-                Subject = identity,
-                Expires = expires
-            });
-            return handler.WriteToken(securityToken);
         }
 
         [HttpGet]

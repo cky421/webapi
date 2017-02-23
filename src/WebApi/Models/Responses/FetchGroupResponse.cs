@@ -9,6 +9,11 @@ namespace WebApi.Models.Responses
         [JsonProperty("groups")]
         public List<Group> Groups { get; set; }
 
+        public FetchGroupResponse()
+        {
+
+        }
+
         public FetchGroupResponse(List<Group> groups)
         {
             Groups = groups;

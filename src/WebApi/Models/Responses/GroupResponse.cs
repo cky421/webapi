@@ -12,6 +12,11 @@ namespace WebApi.Models.Responses
         [JsonProperty("userid")]
         public string UserId { get; set; }
 
+        public GroupResponse()
+        {
+
+        }
+
         public GroupResponse(Group group)
         {
             GroupName = group.GroupName;

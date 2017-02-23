@@ -115,6 +115,14 @@ namespace WebApi.Repositories
             return groupResult;
         }
 
+        public void Clear(string userId)
+        {
+            NullCheck(userId, nameof(userId));
+
+            var filter = Builders<Group>.Filter.Eq(UserIdField, userId);
+            _groups.DeleteMany(filter);
+        }
+
         public bool IsExisted(string groupName, string userId)
         {
             NullCheck(groupName, nameof(groupName));
