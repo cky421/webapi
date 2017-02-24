@@ -1,4 +1,4 @@
-﻿namespace WebApi.Models.QueryResult
+﻿namespace WebApi.Models.Responses
 {
     public enum Results
     {

@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using MongoDB.Driver;
 using WebApi.Common;
 using WebApi.Models.Mongodb;
-using WebApi.Models.QueryResult;
+using WebApi.Models.Responses;
+using WebApi.Models.Responses.Groups;
 using WebApi.Repositories.Interfaces;
 using static WebApi.Models.Mongodb.Fields;
 
@@ -20,17 +21,23 @@ namespace WebApi.Repositories
             _groups = client.GetDatabase(Config.ApplicationName).GetCollection<Group>("Group");
         }
 
-        public List<Group> GetAllGroupsByUserId(string userId)
+        public FetchGroupResponse GetAllGroupsByUserId(string userId)
         {
             var filter = Builders<Group>.Filter.Eq(UserIdField, userId);
-            return _groups.Find(filter).ToList();
+            var groups = _groups.Find(filter).ToList();
+            var response = new FetchGroupResponse
+            {
+                Groups = groups,
+                Result = Results.Succeed
+            };
+            return response;
         }
 
-        public GroupResult InsertGroup(string groupName, string userId)
+        public GroupResponse InsertGroup(string groupName, string userId)
         {
             CheckUserId(userId);
 
-            var builder = new GroupResult.GroupResultBuilder().
+            var builder = new GroupResponse.Builder().
                 SetGroupName(groupName).
                 SetUserId(userId);
 
@@ -38,14 +45,14 @@ namespace WebApi.Repositories
             if (_groups.Count(filter) >= Max)
             {
                 builder.SetResult(Results.Failed);
-                builder.SetReason($"Maximum number of groups reached：{Max}");
+                builder.SetMessage($"Maximum number of groups reached：{Max}");
             }
             else if (!string.IsNullOrEmpty(groupName))
             {
                 if (IsExisted(groupName, userId))
                 {
                     builder.SetResult(Results.Exists);
-                    builder.SetReason($"{groupName} is existed");
+                    builder.SetMessage($"{groupName} is existed");
                 }
                 else
                 {
@@ -62,16 +69,16 @@ namespace WebApi.Repositories
             else
             {
                 builder.SetResult(Results.Failed);
-                builder.SetReason($"{nameof(groupName)} is null");
+                builder.SetMessage($"{nameof(groupName)} is null");
             }
-            return builder.Builder();
+            return builder.Build();
         }
 
-        public GroupResult UpdateGroup(string newGroupName, string groupId, string userId)
+        public GroupResponse UpdateGroup(string newGroupName, string groupId, string userId)
         {
             CheckUserId(userId);
 
-            var builder = new GroupResult.GroupResultBuilder().
+            var builder = new GroupResponse.Builder().
                 SetGroupId(groupId).
                 SetUserId(userId);
 
@@ -81,7 +88,7 @@ namespace WebApi.Repositories
                 if (IsExisted(newGroupName, groupId, userId))
                 {
                     builder.SetResult(Results.Exists);
-                    builder.SetReason($"{newGroupName} is existed");
+                    builder.SetMessage($"{newGroupName} is existed");
                 }
                 else
                 {
@@ -96,16 +103,16 @@ namespace WebApi.Repositories
             else
             {
                 builder.SetResult(Results.Failed);
-                builder.SetReason($"{nameof(newGroupName)} or/and {nameof(userId)} is/are null");
+                builder.SetMessage($"{nameof(newGroupName)} or/and {nameof(userId)} is/are null");
             }
-            return builder.Builder();
+            return builder.Build();
         }
 
-        public GroupResult GetGroup(string groupId, string userId)
+        public GroupResponse GetGroup(string groupId, string userId)
         {
             CheckUserId(userId);
 
-            var builder = new GroupResult.GroupResultBuilder();
+            var builder = new GroupResponse.Builder();
             if (!string.IsNullOrEmpty(groupId))
             {
                 var filter = Builders<Group>.Filter.Eq(GroupIdField, groupId) & Builders<Group>.Filter.Eq(UserIdField, userId);
@@ -120,23 +127,23 @@ namespace WebApi.Repositories
                 else
                 {
                     builder.SetResult(Results.NotExists).
-                        SetReason("Can not find such group");
+                        SetMessage("Can not find such group");
                 }
             }
             else
             {
                 builder.SetResult(Results.Failed).
-                    SetReason($"{nameof(groupId)} is null").
+                    SetMessage($"{nameof(groupId)} is null").
                     SetUserId(userId);
             }
-            return builder.Builder();
+            return builder.Build();
         }
 
-        public GroupResult DeleteGroup(string groupId, string userId)
+        public GroupResponse DeleteGroup(string groupId, string userId)
         {
             CheckUserId(userId);
 
-            var builder = new GroupResult.GroupResultBuilder();
+            var builder = new GroupResponse.Builder();
             if (!string.IsNullOrEmpty(groupId))
             {
                 var queryResult = GetGroup(groupId, userId);
@@ -148,7 +155,7 @@ namespace WebApi.Repositories
                 builder.SetGroupId(queryResult.GroupId)
                     .SetGroupName(queryResult.GroupName)
                     .SetUserId(queryResult.UserId)
-                    .SetReason(queryResult.Reason)
+                    .SetMessage(queryResult.Message)
                     .SetResult(queryResult.Result);
             }
             else
@@ -157,7 +164,7 @@ namespace WebApi.Repositories
                     .SetUserId(userId)
                     .SetResult(Results.Failed);
             }
-            return builder.Builder();
+            return builder.Build();
         }
 
         public void Clear(string userId)
