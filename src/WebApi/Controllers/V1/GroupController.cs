@@ -5,8 +5,8 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using WebApi.Common;
 using WebApi.Models.Requests;
+using WebApi.Models.Requests.Groups;
 using WebApi.Models.Responses;
-using WebApi.Models.Responses.Groups;
 using WebApi.Repositories.Interfaces;
 using static WebApi.Common.Auth.ClaimsIdentityHelper;
 

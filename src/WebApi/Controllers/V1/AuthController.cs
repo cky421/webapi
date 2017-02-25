@@ -13,7 +13,7 @@ using static WebApi.Common.Auth.ClaimsIdentityHelper;
 
 namespace WebApi.Controllers.V1
 {
-    [Route("api/v1/auth")]
+    [Route("api/v1/user")]
     public class AuthController : Controller
     {
         private readonly IUserRepository _users;
@@ -24,7 +24,7 @@ namespace WebApi.Controllers.V1
             _logger = logger;
         }
 
-        [HttpPost]
+        [HttpPost("auth")]
         public string Post([FromBody]AuthRequest user)
         {
             if (user == null)
@@ -45,7 +45,7 @@ namespace WebApi.Controllers.V1
                     Message = "Username or password is invalid"
                 });
             var expiresIn = DateTime.Now + TokenAuthOption.ExpiresSpan;
-            var accessToken = GenerateToken(existUser, expiresIn);
+            var accessToken = GenerateToken(existUser.UserId, existUser.UserName, expiresIn);
 
             return JsonConvert.SerializeObject(new AuthResponse
             {

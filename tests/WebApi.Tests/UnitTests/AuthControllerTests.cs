@@ -1,11 +1,12 @@
+using System;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json;
 using WebApi.Common;
 using WebApi.Controllers.V1;
-using WebApi.Models.Mongodb;
 using WebApi.Models.Requests;
 using WebApi.Models.Responses;
+using WebApi.Models.Responses.Users;
 using WebApi.Repositories.Interfaces;
 using Xunit;
 
@@ -17,10 +18,11 @@ namespace WebApi.Tests.UnitTests
         public void TestGetAuthToken()
         {
             var mockRepo = new Mock<IUserRepository>();
-            var user = new User
+            var user = new UserResponse
             {
-                Username = Config.AdminName,
-                Password = Config.AdminPwd
+                UserId = Guid.NewGuid().ToString(),
+                UserName = Config.AdminName,
+                Result = Results.Succeed
             };
 
             mockRepo.Setup(repo => repo.Find(Config.AdminName, Config.AdminPwd)).Returns(user);
