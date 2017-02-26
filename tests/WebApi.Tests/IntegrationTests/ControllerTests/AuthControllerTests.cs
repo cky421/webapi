@@ -26,7 +26,7 @@ namespace WebApi.Tests.IntegrationTests.ControllerTests
                 Username = Config.AdminName,
                 Password = Config.AdminPwd
             };
-            var response = await _client.PostAsJsonAsync("/api/v1/auth", user);
+            var response = await _client.PostAsJsonAsync("/api/v1/user/auth", user);
             response.EnsureSuccessStatusCode();
             var responseContent = await response.Content.ReadAsJsonAsync<AuthResponse>();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
