@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using WebApi.Common;
 using WebApi.Models.Mongodb;
 using WebApi.Models.Requests;
-using WebApi.Models.Responses;
+using WebApi.Models.Responses.Groups;
 using WebApi.Tests.IntegrationTests.TestFixtures;
 using Xunit;
 using static WebApi.Common.Auth.ClaimsIdentityHelper;

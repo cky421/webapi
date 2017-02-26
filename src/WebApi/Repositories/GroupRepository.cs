@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using MongoDB.Driver;
 using WebApi.Common;
 using WebApi.Models.Mongodb;
+using WebApi.Models.Responses;
+using WebApi.Models.Responses.Groups;
 using WebApi.Repositories.Interfaces;
 using static WebApi.Models.Mongodb.Fields;
 
@@ -11,6 +13,7 @@ namespace WebApi.Repositories
     public class GroupRepository : IGroupRepository
     {
         private readonly IMongoCollection<Group> _groups;
+        private const long Max = 25;
 
         public GroupRepository()
         {
@@ -18,138 +21,180 @@ namespace WebApi.Repositories
             _groups = client.GetDatabase(Config.ApplicationName).GetCollection<Group>("Group");
         }
 
-        public List<Group> GetAllGroupsByUserId(string userId)
+        public FetchGroupResponse GetAllGroupsByUserId(string userId)
         {
-            NullCheck(userId, nameof(userId));
+            var filter = Builders<Group>.Filter.Eq(UserIdField, userId);
+            var groups = _groups.Find(filter).ToList();
+            var response = new FetchGroupResponse
+            {
+                Groups = groups,
+                Result = Results.Succeed
+            };
+            return response;
+        }
+
+        public GroupResponse InsertGroup(string groupName, string userId)
+        {
+            CheckUserId(userId);
+
+            var builder = new GroupResponse.Builder().
+                SetGroupName(groupName).
+                SetUserId(userId);
 
             var filter = Builders<Group>.Filter.Eq(UserIdField, userId);
-            return _groups.Find(filter).ToList();
-        }
-
-        public GroupResult InsertGroup(string groupName, string userId)
-        {
-            NullCheck(groupName, nameof(groupName));
-            NullCheck(userId, nameof(userId));
-
-            var groupResult = new GroupResult(new Group
+            if (_groups.Count(filter) >= Max)
             {
-                GroupName = groupName,
-                UserId = userId
-            });
-
-            if (IsExisted(groupName, userId))
-            {
-                groupResult.Result = Result.Exists;
-                groupResult.Reason = $"{groupName} is existed";
+                builder.SetResult(Results.Failed);
+                builder.SetMessage($"Maximum number of groups reached：{Max}");
             }
-            else
+            else if (!string.IsNullOrEmpty(groupName))
             {
-                _groups.InsertOne(groupResult);
-                groupResult.Result = Result.Succeed;
-            }
-
-            return groupResult;
-        }
-
-        public GroupResult UpdateGroup(string newGroupName, string groupId, string userId)
-        {
-            NullCheck(newGroupName, nameof(newGroupName));
-            NullCheck(groupId, nameof(groupId));
-            NullCheck(userId, nameof(userId));
-
-            var groupResult = new GroupResult(new Group
-            {
-                GroupId = groupId,
-                UserId = userId
-            });
-
-            if (IsExisted(newGroupName, groupId, userId))
-            {
-                groupResult.Result = Result.Exists;
-                groupResult.Reason = $"{newGroupName} is existed";
-            }
-            else
-            {
-                var filter = Builders<Group>.Filter.Eq(GroupIdField, groupId) & Builders<Group>.Filter.Eq(UserIdField, userId);
-                var update = Builders<Group>.Update.Set(GroupNameField, newGroupName);
-                _groups.UpdateOne(filter, update);
-                groupResult.Result = Result.Succeed;
-                groupResult.GroupName = newGroupName;
-            }
-            return groupResult;
-        }
-
-        public GroupResult GetGroup(string groupId, string userId)
-        {
-            NullCheck(groupId, nameof(groupId));
-            NullCheck(userId, nameof(userId));
-
-            var filter = Builders<Group>.Filter.Eq(GroupIdField, groupId) & Builders<Group>.Filter.Eq(UserIdField, userId);
-            var group = _groups.Find(filter).FirstOrDefault();
-            return group != null ? new GroupResult(group) {Result = Result.Succeed} :
-                new GroupResult{ Result = Result.Failed, Reason = "Can not find such group"};
-        }
-
-        public GroupResult DeleteGroup(string groupId, string userId)
-        {
-            NullCheck(groupId, nameof(groupId));
-            NullCheck(userId, nameof(userId));
-
-            var queryResult = GetGroup(groupId, userId);
-            GroupResult groupResult;
-            if (queryResult.Result == Result.Succeed)
-            {
-                var filter = Builders<Group>.Filter.Eq(GroupIdField, groupId) & Builders<Group>.Filter.Eq(UserIdField, userId);
-                _groups.DeleteOne(filter);
-                groupResult = queryResult;
-            }
-            else
-            {
-                groupResult = new GroupResult(new Group{GroupId = groupId, UserId = userId})
+                if (IsExisted(groupName, userId))
                 {
-                    Result = Result.NotExists,
-                    Reason = "Can not find such group"
-                };
-            }
+                    builder.SetResult(Results.Exists);
+                    builder.SetMessage($"{groupName} is existed");
+                }
+                else
+                {
+                    var group = new Group
+                    {
+                        GroupName = groupName,
+                        UserId = userId
+                    };
+                    _groups.InsertOne(group);
 
-            return groupResult;
+                    builder.SetResult(Results.Succeed).SetGroupId(group.GroupId);
+                }
+            }
+            else
+            {
+                builder.SetResult(Results.Failed);
+                builder.SetMessage($"{nameof(groupName)} is null");
+            }
+            return builder.Build();
+        }
+
+        public GroupResponse UpdateGroup(string newGroupName, string groupId, string userId)
+        {
+            CheckUserId(userId);
+
+            var builder = new GroupResponse.Builder().
+                SetGroupId(groupId).
+                SetUserId(userId);
+
+
+            if (!string.IsNullOrEmpty(newGroupName) && !string.IsNullOrEmpty(groupId))
+            {
+                if (IsExisted(newGroupName, groupId, userId))
+                {
+                    builder.SetResult(Results.Exists);
+                    builder.SetMessage($"{newGroupName} is existed");
+                }
+                else
+                {
+                    var filter = Builders<Group>.Filter.Eq(GroupIdField, groupId) &
+                                 Builders<Group>.Filter.Eq(UserIdField, userId);
+                    var update = Builders<Group>.Update.Set(GroupNameField, newGroupName);
+                    _groups.UpdateOne(filter, update);
+                    builder.SetResult(Results.Succeed);
+                    builder.SetGroupName(newGroupName);
+                }
+            }
+            else
+            {
+                builder.SetResult(Results.Failed);
+                builder.SetMessage($"{nameof(newGroupName)} or/and {nameof(userId)} is/are null");
+            }
+            return builder.Build();
+        }
+
+        public GroupResponse GetGroup(string groupId, string userId)
+        {
+            CheckUserId(userId);
+
+            var builder = new GroupResponse.Builder();
+            if (!string.IsNullOrEmpty(groupId))
+            {
+                var filter = Builders<Group>.Filter.Eq(GroupIdField, groupId) & Builders<Group>.Filter.Eq(UserIdField, userId);
+                var group = _groups.Find(filter).FirstOrDefault();
+                if (group != null)
+                {
+                    builder.SetGroupId(group.GroupId)
+                        .SetGroupName(group.GroupName)
+                        .SetUserId(group.UserId)
+                        .SetResult(Results.Succeed);
+                }
+                else
+                {
+                    builder.SetResult(Results.NotExists).
+                        SetMessage("Can not find such group");
+                }
+            }
+            else
+            {
+                builder.SetResult(Results.Failed).
+                    SetMessage($"{nameof(groupId)} is null").
+                    SetUserId(userId);
+            }
+            return builder.Build();
+        }
+
+        public GroupResponse DeleteGroup(string groupId, string userId)
+        {
+            CheckUserId(userId);
+
+            var builder = new GroupResponse.Builder();
+            if (!string.IsNullOrEmpty(groupId))
+            {
+                var queryResult = GetGroup(groupId, userId);
+                if (queryResult.Result == Results.Succeed)
+                {
+                    var filter = Builders<Group>.Filter.Eq(GroupIdField, groupId) & Builders<Group>.Filter.Eq(UserIdField, userId);
+                    _groups.DeleteOne(filter);
+                }
+                builder.SetGroupId(queryResult.GroupId)
+                    .SetGroupName(queryResult.GroupName)
+                    .SetUserId(queryResult.UserId)
+                    .SetMessage(queryResult.Message)
+                    .SetResult(queryResult.Result);
+            }
+            else
+            {
+                builder.SetGroupId($"{nameof(groupId)} is null")
+                    .SetUserId(userId)
+                    .SetResult(Results.Failed);
+            }
+            return builder.Build();
         }
 
         public void Clear(string userId)
         {
-            NullCheck(userId, nameof(userId));
+            CheckUserId(userId);
 
             var filter = Builders<Group>.Filter.Eq(UserIdField, userId);
             _groups.DeleteMany(filter);
         }
 
-        public bool IsExisted(string groupName, string userId)
+        private bool IsExisted(string groupName, string userId)
         {
-            NullCheck(groupName, nameof(groupName));
-            NullCheck(userId, nameof(userId));
-
             var filter = Builders<Group>.Filter.Eq(UserIdField, userId) & Builders<Group>.Filter.Eq(GroupNameField, groupName);
             var group = _groups.Find(filter).FirstOrDefault();
             return group != null;
         }
 
-        public bool IsExisted(string groupName, string groupId, string userId)
+        private bool IsExisted(string groupName, string groupId, string userId)
         {
-            NullCheck(groupName, nameof(groupName));
-            NullCheck(groupId, nameof(groupId));
-            NullCheck(userId, nameof(userId));
-
             var filter = Builders<Group>.Filter.Eq(GroupIdField, groupId) & Builders<Group>.Filter.Eq(UserIdField, userId) &
                          Builders<Group>.Filter.Eq(GroupNameField, groupName);
             var group = _groups.Find(filter).FirstOrDefault();
             return group != null;
         }
 
-        private static void NullCheck(string filed, string filedName)
+        private static void CheckUserId(string userId)
         {
-            if (string.IsNullOrEmpty(filed))
+            if (string.IsNullOrEmpty(userId))
             {
-                throw new NullReferenceException($"{filedName} is null");
+                throw new ArgumentNullException($"{nameof(userId)} is null");
             }
         }
     }
