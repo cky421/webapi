@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using MongoDB.Driver;
 using WebApi.Common;
 using WebApi.Models.Mongodb;

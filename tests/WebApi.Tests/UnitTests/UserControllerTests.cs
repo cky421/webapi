@@ -1,10 +1,11 @@
 using System;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json;
 using WebApi.Common;
 using WebApi.Controllers.V1;
-using WebApi.Models.Requests;
+using WebApi.Models.Requests.Users;
 using WebApi.Models.Responses;
 using WebApi.Models.Responses.Users;
 using WebApi.Repositories.Interfaces;
@@ -26,17 +27,20 @@ namespace WebApi.Tests.UnitTests
             };
 
             mockRepo.Setup(repo => repo.Find(Config.AdminName, Config.AdminPwd)).Returns(user);
-            var mockLog = new Mock<ILogger<AuthController>>();
+            var mockLog = new Mock<ILogger<UserController>>();
 
-            var auth = new AuthController(mockRepo.Object, mockLog.Object);
-            var result = auth.Post(new AuthRequest
+            var userController = new UserController(mockRepo.Object, mockLog.Object);
+            var result = userController.Auth(new AuthRequest
             {
                 Username = Config.AdminName,
                 Password = Config.AdminPwd
             });
 
-            var response = JsonConvert.DeserializeObject<AuthResponse>(result);
-            Assert.Null(response.Message);
+            var okObjectResult = result as OkObjectResult;
+
+            Assert.NotNull(okObjectResult);
+            Assert.NotNull(okObjectResult.Value);
+            var response = JsonConvert.DeserializeObject<AuthResponse>(okObjectResult.Value.ToString());
             Assert.NotNull(response.Token);
         }
     }

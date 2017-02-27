@@ -2,8 +2,8 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using WebApi.Common;
-using WebApi.Models.Requests;
-using WebApi.Models.Responses;
+using WebApi.Models.Requests.Users;
+using WebApi.Models.Responses.Users;
 using WebApi.Tests.IntegrationTests.TestFixtures;
 using Xunit;
 
