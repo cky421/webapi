@@ -24,6 +24,17 @@ namespace WebApi.Repositories
         {
             var filter = Builders<Group>.Filter.Eq(UserIdField, userId);
             var groups = _groups.Find(filter).ToList();
+            if (groups.Count == 0)
+            {
+                var group = InsertGroup("Default", userId);
+                groups.Add(new Group
+                {
+                    GroupId = group.GroupId,
+                    GroupName = group.GroupName,
+                    UserId = group.UserId
+                });
+            }
+
             var response = new FetchGroupResponse
             {
                 Groups = groups,
