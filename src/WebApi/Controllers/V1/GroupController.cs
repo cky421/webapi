@@ -4,9 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using WebApi.Common;
-using WebApi.Models.Requests;
+using WebApi.Models.Requests.Groups;
 using WebApi.Models.Responses;
-using WebApi.Models.Responses.Groups;
 using WebApi.Repositories.Interfaces;
 using static WebApi.Common.Auth.ClaimsIdentityHelper;
 
@@ -29,42 +28,42 @@ namespace WebApi.Controllers.V1
         public IActionResult Create([FromBody]CreateGroupRequest group)
         {
             var groupResponse = _groups.InsertGroup(group?.GroupName, this.GetUserId());
-            return HandleGroupResponse(groupResponse);
+            return HandleResponse(groupResponse);
         }
 
         [HttpPut]
         public IActionResult Update([FromBody]UpdateGroupRequest group)
         {
             var groupResponse = _groups.UpdateGroup(group?.NewGroupName, group?.GroupId, this.GetUserId());
-            return HandleGroupResponse(groupResponse);
+            return HandleResponse(groupResponse);
         }
 
         [HttpDelete("{id}")]
         public IActionResult Delete([FromRoute] string id)
         {
             var groupResponse = _groups.DeleteGroup(id, this.GetUserId());
-            return HandleGroupResponse(groupResponse);
+            return HandleResponse(groupResponse);
         }
 
         [HttpGet]
         public IActionResult Fetch()
         {
             var groups = _groups.GetAllGroupsByUserId(this.GetUserId());
-            return HandleGroupResponse(groups);
+            return HandleResponse(groups);
         }
 
         [HttpGet("{id}")]
         public IActionResult Fetch([FromRoute] string id)
         {
             var groupResponse = _groups.GetGroup(id, this.GetUserId());
-            return HandleGroupResponse(groupResponse);
+            return HandleResponse(groupResponse);
         }
 
-        private IActionResult HandleGroupResponse(Response groupResponse)
+        private IActionResult HandleResponse(Response response)
         {
-            var content = JsonConvert.SerializeObject(groupResponse);
+            var content = JsonConvert.SerializeObject(response);
             IActionResult result;
-            switch (groupResponse.Result)
+            switch (response.Result)
             {
                 case Results.Succeed:
                     result = Ok(content);

@@ -5,7 +5,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using WebApi.Common;
 using WebApi.Models.Mongodb;
-using WebApi.Models.Requests;
+using WebApi.Models.Requests.Groups;
 using WebApi.Models.Responses.Groups;
 using WebApi.Tests.IntegrationTests.TestFixtures;
 using Xunit;
@@ -26,7 +26,7 @@ namespace WebApi.Tests.IntegrationTests.ControllerTests
                 Password = Config.AdminPwd,
                 UserId = fixture.AdminId
             };
-            var token = GenerateToken(admin, DateTime.Now + TimeSpan.FromHours(1));
+            var token = GenerateToken(admin.UserId, admin.Username, DateTime.Now + TimeSpan.FromHours(1));
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         }

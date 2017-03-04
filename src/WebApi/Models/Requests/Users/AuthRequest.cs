@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace WebApi.Models.Requests
+namespace WebApi.Models.Requests.Users
 {
     public class AuthRequest
     {
