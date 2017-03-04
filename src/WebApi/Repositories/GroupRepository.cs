@@ -22,6 +22,8 @@ namespace WebApi.Repositories
 
         public FetchGroupResponse GetAllGroupsByUserId(string userId)
         {
+            CheckUserId(userId);
+
             var filter = Builders<Group>.Filter.Eq(UserIdField, userId);
             var groups = _groups.Find(filter).ToList();
             if (groups.Count == 0)
