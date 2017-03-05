@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using WebApi.Common;
 using WebApi.Repositories;
 using WebApi.Repositories.Interfaces;
@@ -17,9 +18,9 @@ namespace WebApi.Tests.IntegrationTests.TestFixtures
             AdminId = admin.UserId;
 
             _groupRepository = new GroupRepository();
-            _groupRepository.InsertGroup("TestGroup1", AdminId);
-            _groupRepository.InsertGroup("TestGroup2", AdminId);
-            _groupRepository.InsertGroup("TestGroup3", AdminId);
+            _groupRepository.InsertGroup(AdminId, "TestGroup1");
+            _groupRepository.InsertGroup(AdminId, "TestGroup2");
+            _groupRepository.InsertGroup(AdminId, "TestGroup3");
         }
 
         public override void Dispose()
