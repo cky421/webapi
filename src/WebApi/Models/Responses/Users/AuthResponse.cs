@@ -27,7 +27,7 @@ namespace WebApi.Models.Responses.Users
             UserId = userid;
         }
 
-        public class Builder
+        public new class Builder
         {
             private double _expire;
             private string _type;

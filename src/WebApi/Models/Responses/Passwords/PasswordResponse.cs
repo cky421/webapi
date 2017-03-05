@@ -38,7 +38,7 @@ namespace WebApi.Models.Responses.Passwords
             Note = note;
         }
 
-        public class Builder
+        public new class Builder
         {
             private string _passwordid;
             private long _publish;

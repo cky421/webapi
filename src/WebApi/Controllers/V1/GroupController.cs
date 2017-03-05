@@ -1,13 +1,9 @@
-﻿using System;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using WebApi.Common;
 using WebApi.Models.Requests.Groups;
-using WebApi.Models.Responses;
 using WebApi.Repositories.Interfaces;
-using static WebApi.Common.Auth.ClaimsIdentityHelper;
 
 namespace WebApi.Controllers.V1
 {
@@ -27,58 +23,49 @@ namespace WebApi.Controllers.V1
         [HttpPost]
         public IActionResult Create([FromBody]CreateGroupRequest group)
         {
-            var groupResponse = _groups.InsertGroup(group?.GroupName, this.GetUserId());
-            return HandleResponse(groupResponse);
+            var response = string.IsNullOrWhiteSpace(group?.GroupName)
+                ? this.GenerateBadRequestResponse("groupname is null")
+                : _groups.InsertGroup(this.GetUserId(), group.GroupName);
+
+            return this.HandleResponse(response);
         }
 
         [HttpPut]
         public IActionResult Update([FromBody]UpdateGroupRequest group)
         {
-            var groupResponse = _groups.UpdateGroup(group?.NewGroupName, group?.GroupId, this.GetUserId());
-            return HandleResponse(groupResponse);
+            var response = string.IsNullOrWhiteSpace(group?.NewGroupName) ||
+                       string.IsNullOrWhiteSpace(group.GroupId)
+                ? this.GenerateBadRequestResponse("groupname/groupid can not be null")
+                : _groups.UpdateGroup(group.GroupId, this.GetUserId(), group.NewGroupName);
+
+            return this.HandleResponse(response);
         }
 
-        [HttpDelete("{id}")]
-        public IActionResult Delete([FromRoute] string id)
+        [HttpDelete("{groupid}")]
+        public IActionResult Delete([FromRoute] string groupid)
         {
-            var groupResponse = _groups.DeleteGroup(id, this.GetUserId());
-            return HandleResponse(groupResponse);
+            var response = string.IsNullOrWhiteSpace(groupid)
+                ? this.GenerateBadRequestResponse("groupid is null")
+                : _groups.DeleteGroup(groupid, this.GetUserId());
+
+            return this.HandleResponse(response);
         }
 
         [HttpGet]
         public IActionResult Fetch()
         {
-            var groups = _groups.GetAllGroupsByUserId(this.GetUserId());
-            return HandleResponse(groups);
+            var response = _groups.GetAllGroupsByUserId(this.GetUserId());
+            return this.HandleResponse(response);
         }
 
-        [HttpGet("{id}")]
-        public IActionResult Fetch([FromRoute] string id)
+        [HttpGet("{groupid}")]
+        public IActionResult Fetch([FromRoute] string groupid)
         {
-            var groupResponse = _groups.GetGroup(id, this.GetUserId());
-            return HandleResponse(groupResponse);
-        }
+            var response = string.IsNullOrWhiteSpace(groupid)
+                ? this.GenerateBadRequestResponse("groupid is null")
+                : _groups.GetGroup(groupid, this.GetUserId());
 
-        private IActionResult HandleResponse(Response response)
-        {
-            var content = JsonConvert.SerializeObject(response);
-            IActionResult result;
-            switch (response.Result)
-            {
-                case Results.Succeed:
-                    result = Ok(content);
-                    break;
-                case Results.NotExists:
-                    result = NotFound(content);
-                    break;
-                case Results.Exists:
-                case Results.Failed:
-                    result = BadRequest(content);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-            return result;
+            return this.HandleResponse(response);
         }
     }
 }

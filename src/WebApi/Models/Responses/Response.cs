@@ -16,5 +16,29 @@ namespace WebApi.Models.Responses
             Message = msg;
             Result = result;
         }
+
+        public class Builder
+        {
+            protected string Msg;
+            protected Results Result;
+
+            public virtual Builder SetMessage(string msg)
+            {
+                Msg = msg;
+                return this;
+            }
+
+            public virtual Builder SetResult(Results result)
+            {
+                Result = result;
+                return this;
+            }
+
+            public Response Build()
+            {
+                return new Response(Msg, Result);
+            }
+        }
+
     }
 }

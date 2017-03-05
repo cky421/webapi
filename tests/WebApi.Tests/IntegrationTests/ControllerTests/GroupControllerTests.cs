@@ -9,7 +9,7 @@ using WebApi.Models.Requests.Groups;
 using WebApi.Models.Responses.Groups;
 using WebApi.Tests.IntegrationTests.TestFixtures;
 using Xunit;
-using static WebApi.Common.Auth.ClaimsIdentityHelper;
+using static WebApi.Common.Helper;
 
 namespace WebApi.Tests.IntegrationTests.ControllerTests
 {
