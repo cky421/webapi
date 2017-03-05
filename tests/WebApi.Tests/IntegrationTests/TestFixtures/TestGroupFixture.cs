@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Logging;
 using WebApi.Common;
 using WebApi.Repositories;
 using WebApi.Repositories.Interfaces;

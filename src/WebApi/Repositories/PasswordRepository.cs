@@ -12,12 +12,15 @@ namespace WebApi.Repositories
 {
     public class PasswordRepository : IPasswordRepository
     {
+        private readonly IMongoCollection<Group> _groups;
         private readonly IMongoCollection<Password> _passwords;
         private const long Max = 25;
 
         public PasswordRepository()
         {
             var client = new MongoClient(Config.MongoDbConnection);
+            _passwords = client.GetDatabase(Config.ApplicationName).GetCollection<Password>("Password");
+            _groups = client.GetDatabase(Config.ApplicationName).GetCollection<Group>("Group");
             _passwords = client.GetDatabase(Config.ApplicationName).GetCollection<Password>("Password");
         }
 
@@ -49,6 +52,10 @@ namespace WebApi.Repositories
             {
                 builder.SetResult(Results.Failed);
                 builder.SetMessage($"Maximum number of groups reached：{Max}");
+            } else if (IsGroupExisted(groupId, userId))
+            {
+                builder.SetResult(Results.Failed);
+                builder.SetMessage($"group with id {groupId} doesn't exist");
             }
             else
             {
@@ -115,6 +122,11 @@ namespace WebApi.Repositories
                     .SetPublish(publish)
                     .SetPasswordId(passwordId)
                     .SetResult(Results.Succeed);
+            }
+            else if(IsGroupExisted(groupId, userId))
+            {
+                builder.SetResult(Results.Failed);
+                builder.SetMessage($"group with id {groupId} doesn't exist");
             }
             else
             {
@@ -190,6 +202,14 @@ namespace WebApi.Repositories
                          Builders<Password>.Filter.Eq(UserIdField, userId);
             var password = _passwords.Find(filter).FirstOrDefault();
             return password != null;
+        }
+
+        private bool IsGroupExisted(string groupId, string userId)
+        {
+            var filter = Builders<Group>.Filter.Eq(GroupIdField, groupId) &
+                         Builders<Group>.Filter.Eq(UserIdField, userId);
+            var group = _groups.Find(filter).FirstOrDefault();
+            return group != null;
         }
     }
 }

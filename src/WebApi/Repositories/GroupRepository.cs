@@ -12,12 +12,14 @@ namespace WebApi.Repositories
     public class GroupRepository : IGroupRepository
     {
         private readonly IMongoCollection<Group> _groups;
+        private readonly IMongoCollection<Password> _passwords;
         private const long Max = 25;
 
         public GroupRepository()
         {
             var client = new MongoClient(Config.MongoDbConnection);
             _groups = client.GetDatabase(Config.ApplicationName).GetCollection<Group>("Group");
+            _passwords = client.GetDatabase(Config.ApplicationName).GetCollection<Password>("Password");
         }
 
         public FetchGroupResponse GetAllGroupsByUserId([NotNullOrWhiteSpace]string userId)
@@ -78,7 +80,7 @@ namespace WebApi.Repositories
         {
             var builder = new GroupResponse.Builder().SetGroupId(groupId).SetUserId(userId);
 
-            if (IsExisted(newGroupName, groupId, userId))
+            if (IsExisted(newGroupName, userId))
             {
                 builder.SetResult(Results.Exists);
                 builder.SetMessage($"{newGroupName} is existed");
@@ -126,9 +128,13 @@ namespace WebApi.Repositories
             var queryResult = GetGroup(groupId, userId);
             if (queryResult.Result == Results.Succeed)
             {
-                var filter = Builders<Group>.Filter.Eq(GroupIdField, groupId) &
-                             Builders<Group>.Filter.Eq(UserIdField, userId);
-                _groups.DeleteOne(filter);
+                var groupFilter = Builders<Group>.Filter.Eq(GroupIdField, groupId) &
+                                  Builders<Group>.Filter.Eq(UserIdField, userId);
+                _groups.DeleteOne(groupFilter);
+
+                var passwordFilter = Builders<Password>.Filter.Eq(GroupIdField, groupId) &
+                                      Builders<Password>.Filter.Eq(UserIdField, userId);
+                _passwords.DeleteMany(passwordFilter);
             }
             builder.SetGroupId(queryResult.GroupId)
                 .SetGroupName(queryResult.GroupName)
@@ -147,14 +153,7 @@ namespace WebApi.Repositories
 
         private bool IsExisted(string groupName, string userId)
         {
-            var filter = Builders<Group>.Filter.Eq(UserIdField, userId) & Builders<Group>.Filter.Eq(GroupNameField, groupName);
-            var group = _groups.Find(filter).FirstOrDefault();
-            return group != null;
-        }
-
-        private bool IsExisted(string groupName, string groupId, string userId)
-        {
-            var filter = Builders<Group>.Filter.Eq(GroupIdField, groupId) & Builders<Group>.Filter.Eq(UserIdField, userId) &
+            var filter = Builders<Group>.Filter.Eq(UserIdField, userId) &
                          Builders<Group>.Filter.Eq(GroupNameField, groupName);
             var group = _groups.Find(filter).FirstOrDefault();
             return group != null;
