@@ -2,7 +2,6 @@
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using WebApi.Common;
 using WebApi.Models.Requests.Users;
 using WebApi.Models.Responses.Users;
