@@ -11,7 +11,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using WebApi.Common;
-using WebApi.Common.Auth;
 using WebApi.Models.Responses;
 using WebApi.Repositories;
 using WebApi.Repositories.Interfaces;
@@ -45,6 +44,7 @@ namespace WebApi
             services.AddSwaggerGen();
             services.AddSingleton<IUserRepository, UserRepository>();
             services.AddSingleton<IGroupRepository, GroupRepository>();
+            services.AddSingleton<IPasswordRepository, PasswordRepository>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
@@ -89,9 +89,9 @@ namespace WebApi
             {
                 TokenValidationParameters = new TokenValidationParameters
                 {
-                    IssuerSigningKey = TokenAuthOption.Key,
-                    ValidAudience = TokenAuthOption.Audience,
-                    ValidIssuer = TokenAuthOption.Issuer,
+                    IssuerSigningKey = Config.Key,
+                    ValidAudience = Config.Audience,
+                    ValidIssuer = Config.Issuer,
                     // 验证签名密钥是否正确
                     ValidateIssuerSigningKey = true,
                     // 验证令牌是否超出有效期

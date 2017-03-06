@@ -10,6 +10,7 @@ using WebApi.Models.Responses;
 using WebApi.Models.Responses.Users;
 using WebApi.Repositories.Interfaces;
 using Xunit;
+using static WebApi.Common.Helper;
 
 namespace WebApi.Tests.UnitTests
 {
@@ -19,14 +20,18 @@ namespace WebApi.Tests.UnitTests
         public void TestGetAuthToken()
         {
             var mockRepo = new Mock<IUserRepository>();
-            var user = new UserResponse
-            {
-                UserId = Guid.NewGuid().ToString(),
-                UserName = Config.AdminName,
-                Result = Results.Succeed
-            };
+            var expiresIn = DateTime.Now + Config.ExpiresSpan;
+            var userId = Guid.NewGuid().ToString();
+            var accessToken = GenerateToken(userId, Config.AdminName, expiresIn);
+            var builder = new AuthResponse.Builder();
+            builder.SetExpire(Config.ExpiresSpan.TotalSeconds)
+                .SetToken(accessToken)
+                .SetUserId(Guid.NewGuid().ToString())
+                .SetType(Config.TokenType)
+                .SetUsername(Config.AdminName)
+                .SetResult(Results.Succeed);
 
-            mockRepo.Setup(repo => repo.Find(Config.AdminName, Config.AdminPwd)).Returns(user);
+            mockRepo.Setup(repo => repo.Auth(Config.AdminName, Config.AdminPwd)).Returns(builder.Build());
             var mockLog = new Mock<ILogger<UserController>>();
 
             var userController = new UserController(mockRepo.Object, mockLog.Object);

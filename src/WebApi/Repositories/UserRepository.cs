@@ -1,3 +1,4 @@
+using System;
 using MongoDB.Driver;
 using WebApi.Common;
 using WebApi.Models.Mongodb;
@@ -5,6 +6,7 @@ using WebApi.Models.Responses;
 using WebApi.Models.Responses.Users;
 using WebApi.Repositories.Interfaces;
 using static WebApi.Models.Mongodb.Fields;
+using static WebApi.Common.Helper;
 
 namespace WebApi.Repositories
 {
@@ -17,6 +19,33 @@ namespace WebApi.Repositories
             _users = client.GetDatabase(Config.ApplicationName).GetCollection<User>("User");
 
             InsertAdmin();
+        }
+
+        public AuthResponse Auth(string userName, string password)
+        {
+            var existUser = Find(userName, password);
+            var builder = new AuthResponse.Builder();
+            switch (existUser.Result)
+            {
+                case Results.NotExists:
+                    builder.SetMessage("Username or password is invalid");
+                    builder.SetResult(Results.NotExists);
+                    break;
+                case Results.Succeed:
+                    var expiresIn = DateTime.Now + Config.ExpiresSpan;
+                    var accessToken = GenerateToken(existUser.UserId, existUser.UserName, expiresIn);
+                    builder.SetExpire(Config.ExpiresSpan.TotalSeconds)
+                        .SetToken(accessToken)
+                        .SetUserId(existUser.UserId)
+                        .SetType(Config.TokenType)
+                        .SetUsername(existUser.UserName)
+                        .SetResult(Results.Succeed);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            return builder.Build();
         }
 
         public UserResponse Find(string userId)

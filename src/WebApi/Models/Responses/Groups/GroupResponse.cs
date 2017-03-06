@@ -20,7 +20,7 @@ namespace WebApi.Models.Responses.Groups
             UserId = userId;
         }
 
-        public class Builder
+        public new class Builder
         {
             private string _groupId;
             private string _userId;

@@ -17,7 +17,7 @@ namespace WebApi.Models.Responses.Users
             UserName = userName;
         }
 
-        public class Builder
+        public new class Builder
         {
             private string _userId;
             private string _userName;

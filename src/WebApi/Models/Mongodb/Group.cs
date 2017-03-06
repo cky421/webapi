@@ -7,7 +7,6 @@ namespace WebApi.Models.Mongodb
 {
     public class Group
     {
-
         [BsonId]
         [JsonProperty("groupid")]
         public string GroupId { get; set; }
