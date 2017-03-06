@@ -1,6 +1,8 @@
-﻿using System.Net.Http;
+﻿using System.Net;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using WebApi.Common;
 using WebApi.Models.Requests.Users;
 using WebApi.Models.Responses.Users;
@@ -89,6 +91,30 @@ namespace WebApi.Tests.IntegrationTests.ControllerTests
             response4.EnsureSuccessStatusCode();
             var responseContent4 = await response4.Content.ReadAsJsonAsync<AuthResponse>();
             Assert.NotNull(responseContent4.Token);
+        }
+
+        [Fact]
+        public async Task TestBadRequest()
+        {
+            var authRequest = new AuthRequest
+            {
+                Username = "",
+                Password = ""
+            };
+            var response = await _client.PostAsJsonAsync("/api/v1/user/auth", authRequest);
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task TestErrorUsernameOrPassword()
+        {
+            var authRequest = new AuthRequest
+            {
+                Username = "TestUser3",
+                Password = "Password"
+            };
+            var response = await _client.PostAsJsonAsync("/api/v1/user/auth", authRequest);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
     }
 }

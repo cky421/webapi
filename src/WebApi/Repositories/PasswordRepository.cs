@@ -21,7 +21,6 @@ namespace WebApi.Repositories
             var client = new MongoClient(Config.MongoDbConnection);
             _passwords = client.GetDatabase(Config.ApplicationName).GetCollection<Password>("Password");
             _groups = client.GetDatabase(Config.ApplicationName).GetCollection<Group>("Group");
-            _passwords = client.GetDatabase(Config.ApplicationName).GetCollection<Password>("Password");
         }
 
         public FetchPasswordsResponse GetAllPasswordByGroupId([NotNullOrWhiteSpace]string groupId, [NotNullOrWhiteSpace]string userId)
@@ -52,7 +51,7 @@ namespace WebApi.Repositories
             {
                 builder.SetResult(Results.Failed);
                 builder.SetMessage($"Maximum number of groups reached：{Max}");
-            } else if (IsGroupExisted(groupId, userId))
+            } else if (!IsGroupExisted(groupId, userId))
             {
                 builder.SetResult(Results.Failed);
                 builder.SetMessage($"group with id {groupId} doesn't exist");
@@ -98,7 +97,12 @@ namespace WebApi.Repositories
         {
             var builder = new PasswordResponse.Builder();
 
-            if (IsExisted(passwordId, userId))
+            if(!IsGroupExisted(groupId, userId))
+            {
+                builder.SetResult(Results.Failed);
+                builder.SetMessage($"group with id {groupId} doesn't exist");
+            }
+            else if (IsExisted(passwordId, userId))
             {
                 var publish = DateTime.UtcNow.Ticks;
                 var filter = Builders<Password>.Filter.Eq(PassworIdField, passwordId) &
@@ -122,11 +126,6 @@ namespace WebApi.Repositories
                     .SetPublish(publish)
                     .SetPasswordId(passwordId)
                     .SetResult(Results.Succeed);
-            }
-            else if(IsGroupExisted(groupId, userId))
-            {
-                builder.SetResult(Results.Failed);
-                builder.SetMessage($"group with id {groupId} doesn't exist");
             }
             else
             {

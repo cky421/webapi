@@ -30,6 +30,7 @@ namespace WebApi.Models.Responses.Passwords
         {
             PasswordId = passwordid;
             Publish = publish;
+            Title = title;
             Username = username;
             Pwd = pwd;
             PayPwd = paypwd;

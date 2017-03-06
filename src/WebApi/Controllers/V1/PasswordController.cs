@@ -45,11 +45,21 @@ namespace WebApi.Controllers.V1
         }
 
         [HttpGet("{passwordid}")]
-        public IActionResult Get([FromRoute] string passwordId)
+        public IActionResult Get([FromRoute] string passwordid)
         {
-            var response = string.IsNullOrWhiteSpace(passwordId)
+            var response = string.IsNullOrWhiteSpace(passwordid)
                 ? this.GenerateBadRequestResponse("passwordid can not be null")
-                : _passwords.GetPassword(passwordId, this.GetUserId());
+                : _passwords.GetPassword(this.GetUserId(), passwordid);
+
+            return this.HandleResponse(response);
+        }
+
+        [HttpDelete("{passwordid}")]
+        public IActionResult Delete([FromRoute] string passwordid)
+        {
+            var response = string.IsNullOrWhiteSpace(passwordid)
+                ? this.GenerateBadRequestResponse("passwordid can not be null")
+                : _passwords.DeletePassword(this.GetUserId(), passwordid);
 
             return this.HandleResponse(response);
         }
