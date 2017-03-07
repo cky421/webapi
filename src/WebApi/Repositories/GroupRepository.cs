@@ -28,7 +28,7 @@ namespace WebApi.Repositories
             var groups = _groups.Find(filter).ToList();
             if (groups.Count == 0)
             {
-                var group = InsertGroup("Default", userId);
+                var group = InsertGroup(userId, "Default");
                 groups.Add(new Group
                 {
                     GroupId = group.GroupId,
