@@ -169,7 +169,7 @@ namespace WebApi.Repositories
         {
             var builder = new PasswordResponse.Builder();
 
-            var queryResult = GetPassword(passwordId, userId);
+            var queryResult = GetPassword(userId, passwordId);
             if (queryResult.Result == Results.Succeed)
             {
                 var filter = Builders<Password>.Filter.Eq(PassworIdField, passwordId) & Builders<Password>.Filter.Eq(UserIdField, userId);
